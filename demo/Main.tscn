@@ -1,0 +1,184 @@
+[gd_scene load_steps=5 format=3 uid="uid://daro5x6n3pd26"]
+
+[ext_resource type="Script" uid="uid://bcqb5hwnjbtob" path="res://Main.gd" id="1_wt50o"]
+[ext_resource type="Texture2D" uid="uid://cy0mnncxevupr" path="res://assets/native-camera-android.png" id="2_cm0pq"]
+[ext_resource type="Script" uid="uid://x6uwstlo7n6d" path="res://addons/NativeCameraPlugin/NativeCamera.gd" id="2_uu6xs"]
+[ext_resource type="Texture2D" uid="uid://b2myrgf8pkumi" path="res://assets/native-camera-ios.png" id="3_fos0i"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_wt50o")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="MainContainer" type="MarginContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MainContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TextureHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_constants/separation = 40
+
+[node name="AndroidTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC"]
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+texture = ExtResource("2_cm0pq")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="iOSTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+texture = ExtResource("3_fos0i")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="TitleHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/TitleHBC"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Native Camera Demo"
+horizontal_alignment = 1
+
+[node name="CameraHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ButtonsVBC" type="VBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_constants/separation = 5
+
+[node name="GetButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Get Cameras"
+
+[node name="CamerasOB" type="OptionButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+clip_contents = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+autowrap_mode = 1
+fit_to_longest_item = false
+
+[node name="RotationHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC"]
+layout_mode = 2
+text = "Rotation:"
+
+[node name="RotationHSlider" type="HSlider" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 360.0
+step = 90.0
+value = 90.0
+tick_count = 5
+
+[node name="ValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC"]
+layout_mode = 2
+text = "90"
+
+[node name="FrameSkipHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC"]
+layout_mode = 2
+text = "Skip:"
+
+[node name="SkipHSlider" type="HSlider" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 120.0
+value = 40.0
+tick_count = 6
+
+[node name="ValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+text = "40"
+
+[node name="GrayscaleCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+layout_mode = 2
+text = "Grayscale"
+
+[node name="StartButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Start Camera"
+
+[node name="StopButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Stop Camera"
+
+[node name="CameraVBC" type="VBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FacingTitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer"]
+layout_mode = 2
+text = "Facing: "
+
+[node name="FacingValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer"]
+layout_mode = 2
+
+[node name="CameraTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC"]
+custom_minimum_size = Vector2(200, 250)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+expand_mode = 2
+stretch_mode = 5
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/MainContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 210)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 14
+scroll_following = true
+
+[node name="NativeCamera" type="Node" parent="."]
+script = ExtResource("2_uu6xs")
+metadata/_custom_type_script = "uid://x6uwstlo7n6d"
+
+[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/GetButton" to="." method="_on_get_button_pressed"]
+[connection signal="item_selected" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/CamerasOB" to="." method="_on_cameras_ob_item_selected"]
+[connection signal="value_changed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC/RotationHSlider" to="." method="_on_rotation_h_slider_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC/SkipHSlider" to="." method="_on_skip_h_slider_value_changed"]
+[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/StopButton" to="." method="_on_stop_button_pressed"]
+[connection signal="camera_permission_denied" from="NativeCamera" to="." method="_on_native_camera_camera_permission_denied"]
+[connection signal="camera_permission_granted" from="NativeCamera" to="." method="_on_native_camera_camera_permission_granted"]
+[connection signal="frame_available" from="NativeCamera" to="." method="_on_native_camera_frame_available"]

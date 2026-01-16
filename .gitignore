@@ -1,0 +1,51 @@
+#
+# © 2026-present https://github.com/cengiz-pz
+#
+
+# General
+*.lock
+*.log
+
+# Project-specific
+build/
+demo/addons/*Plugin/**
+!demo/addons/*Plugin/
+!demo/addons/*Plugin/**/
+!demo/addons/*Plugin/**/*.import
+!demo/addons/*Plugin/**/*.uid
+demo/android
+demo/ios
+demo/assets/*Plugin
+demo/assets/splash_screens/*
+!demo/assets/splash_screens/*.png
+demo/assets/store_icons/*
+!demo/assets/store_icons/*.png
+ios/godot/
+release/
+
+# Godot-specific
+.import/
+.godot/
+
+# Android-specific
+.gradle/
+*.jar
+!android/gradle/wrapper/gradle-wrapper.jar
+*.aar
+local.properties
+
+# Android Studio/IntelliJ
+.idea/
+
+# iOS-specific
+*.d
+*.o
+*.dblite
+Pods/
+
+# Xcode
+xcuserdata/
+project.xcworkspace/
+
+# macOS
+.DS_Store
