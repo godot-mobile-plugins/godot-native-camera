@@ -44,6 +44,9 @@ func _on_get_button_pressed() -> void:
 	var __cameras_array = camera_node.get_all_cameras()
 	for __camera_info in __cameras_array:
 		_cameras[__camera_info.get_camera_id()] = __camera_info
+		print("Available size:")
+		for __size: FrameSize in __camera_info.get_output_sizes():
+			print("[%d,%d]" % [__size.get_width(), __size.get_height()])
 		cameras_option_button.add_item(__camera_info.get_camera_id())
 
 	if not __cameras_array.is_empty():

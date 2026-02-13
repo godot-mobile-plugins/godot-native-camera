@@ -1,16 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://daro5x6n3pd26"]
+[gd_scene format=3 uid="uid://daro5x6n3pd26"]
 
 [ext_resource type="Script" uid="uid://bcqb5hwnjbtob" path="res://Main.gd" id="1_wt50o"]
 [ext_resource type="Texture2D" uid="uid://cy0mnncxevupr" path="res://assets/native-camera-android.png" id="2_cm0pq"]
 [ext_resource type="Script" uid="uid://x6uwstlo7n6d" path="res://addons/NativeCameraPlugin/NativeCamera.gd" id="2_uu6xs"]
 [ext_resource type="Texture2D" uid="uid://b2myrgf8pkumi" path="res://assets/native-camera-ios.png" id="3_fos0i"]
 
-[node name="Main" type="Node"]
+[node name="Main" type="Node" unique_id=339349618]
 script = ExtResource("1_wt50o")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1717640287]
 
-[node name="MainContainer" type="MarginContainer" parent="CanvasLayer"]
+[node name="MainContainer" type="MarginContainer" parent="CanvasLayer" unique_id=1006664990]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -23,74 +23,74 @@ theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MainContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MainContainer" unique_id=1438442344]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TextureHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer"]
+[node name="TextureHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer" unique_id=1738396020]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme_override_constants/separation = 40
 
-[node name="AndroidTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC"]
+[node name="AndroidTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC" unique_id=116592220]
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 texture = ExtResource("2_cm0pq")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="iOSTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC"]
+[node name="iOSTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC" unique_id=881514197]
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 texture = ExtResource("3_fos0i")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="TitleHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer"]
+[node name="TitleHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer" unique_id=1508380328]
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="Label" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/TitleHBC"]
+[node name="Label" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/TitleHBC" unique_id=483696388]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 text = "Native Camera Demo"
 horizontal_alignment = 1
 
-[node name="CameraHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer"]
+[node name="CameraHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer" unique_id=1547195403]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="ButtonsVBC" type="VBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC"]
+[node name="ButtonsVBC" type="VBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC" unique_id=794279618]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 theme_override_constants/separation = 5
 
-[node name="GetButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+[node name="GetButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=2063818801]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 disabled = true
 text = "Get Cameras"
 
-[node name="CamerasOB" type="OptionButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+[node name="CamerasOB" type="OptionButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=978941571]
 clip_contents = true
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 autowrap_mode = 1
 fit_to_longest_item = false
 
-[node name="RotationHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+[node name="RotationHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=600807468]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC"]
+[node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC" unique_id=926918957]
 layout_mode = 2
 text = "Rotation:"
 
-[node name="RotationHSlider" type="HSlider" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC"]
+[node name="RotationHSlider" type="HSlider" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC" unique_id=1594080949]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 360.0
@@ -98,63 +98,63 @@ step = 90.0
 value = 90.0
 tick_count = 5
 
-[node name="ValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC"]
+[node name="ValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC" unique_id=1456691332]
 layout_mode = 2
 text = "90"
 
-[node name="FrameSkipHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+[node name="FrameSkipHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=349972490]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC"]
+[node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC" unique_id=263970076]
 layout_mode = 2
 text = "Skip:"
 
-[node name="SkipHSlider" type="HSlider" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC"]
+[node name="SkipHSlider" type="HSlider" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC" unique_id=1195390409]
 layout_mode = 2
 size_flags_horizontal = 3
 max_value = 120.0
 value = 40.0
 tick_count = 6
 
-[node name="ValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC"]
+[node name="ValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC" unique_id=2081181124]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 text = "40"
 
-[node name="GrayscaleCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+[node name="GrayscaleCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=584678802]
 layout_mode = 2
 text = "Grayscale"
 
-[node name="StartButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+[node name="StartButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=1684864288]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 disabled = true
 text = "Start Camera"
 
-[node name="StopButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC"]
+[node name="StopButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=739258553]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 disabled = true
 text = "Stop Camera"
 
-[node name="CameraVBC" type="VBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC"]
+[node name="CameraVBC" type="VBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC" unique_id=675719712]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC" unique_id=215450197]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="FacingTitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer"]
+[node name="FacingTitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer" unique_id=1910842356]
 layout_mode = 2
 text = "Facing: "
 
-[node name="FacingValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer"]
+[node name="FacingValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer" unique_id=1245667108]
 layout_mode = 2
 
-[node name="CameraTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC"]
+[node name="CameraTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC" unique_id=1249466783]
 custom_minimum_size = Vector2(200, 250)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -162,14 +162,14 @@ size_flags_vertical = 0
 expand_mode = 2
 stretch_mode = 5
 
-[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/MainContainer/VBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/MainContainer/VBoxContainer" unique_id=1857606278]
 custom_minimum_size = Vector2(0, 210)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 14
 scroll_following = true
 
-[node name="NativeCamera" type="Node" parent="."]
+[node name="NativeCamera" type="Node" parent="." unique_id=724043556]
 script = ExtResource("2_uu6xs")
 metadata/_custom_type_script = "uid://x6uwstlo7n6d"
 
