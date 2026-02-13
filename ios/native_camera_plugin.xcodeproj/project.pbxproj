@@ -3,21 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		071584852F19EAAF00FB048C /* camera_info_wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0715847A2F19EAAF00FB048C /* camera_info_wrapper.mm */; };
-		071584862F19EAAF00FB048C /* frame_size_wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 071584812F19EAAF00FB048C /* frame_size_wrapper.mm */; };
-		071584872F19EAAF00FB048C /* FrameInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071584822F19EAAF00FB048C /* FrameInfo.swift */; };
-		071584882F19EAAF00FB048C /* frame_info_wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0715847D2F19EAAF00FB048C /* frame_info_wrapper.mm */; };
-		071584892F19EAAF00FB048C /* FrameSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071584832F19EAAF00FB048C /* FrameSize.swift */; };
-		0715848A2F19EAAF00FB048C /* CameraInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715847B2F19EAAF00FB048C /* CameraInfo.swift */; };
-		0715848B2F19EAAF00FB048C /* frame_request.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0715847F2F19EAAF00FB048C /* frame_request.mm */; };
-		076A67072F0F6ECC00EFE1F3 /* native_camera_plugin_bootstrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 076A67062F0F6ECC00EFE1F3 /* native_camera_plugin_bootstrap.mm */; };
-		07799B802EEE73CC00619332 /* NativeCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07799B7F2EEE73CC00619332 /* NativeCamera.swift */; };
-		078173322EF018C10087ACA0 /* native_camera_logger.mm in Sources */ = {isa = PBXBuildFile; fileRef = 078173312EF018C00087ACA0 /* native_camera_logger.mm */; };
-		90CAAA9924E71FF10013969F /* native_camera_plugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = 90CAAA9824E71FF10013969F /* native_camera_plugin.mm */; };
+		07DF21712F3EE0E500E2725C /* CameraInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DF215E2F3EE0E500E2725C /* CameraInfo.swift */; };
+		07DF21722F3EE0E500E2725C /* native_camera_logger.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF21692F3EE0E500E2725C /* native_camera_logger.mm */; };
+		07DF21732F3EE0E500E2725C /* frame_size_wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF21642F3EE0E500E2725C /* frame_size_wrapper.mm */; };
+		07DF21742F3EE0E500E2725C /* frame_request.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF21622F3EE0E500E2725C /* frame_request.mm */; };
+		07DF21752F3EE0E500E2725C /* native_camera_plugin_bootstrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF216D2F3EE0E500E2725C /* native_camera_plugin_bootstrap.mm */; };
+		07DF21762F3EE0E500E2725C /* frame_info_wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF21602F3EE0E500E2725C /* frame_info_wrapper.mm */; };
+		07DF21772F3EE0E500E2725C /* FrameInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DF21652F3EE0E500E2725C /* FrameInfo.swift */; };
+		07DF21782F3EE0E500E2725C /* camera_info_wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF215D2F3EE0E500E2725C /* camera_info_wrapper.mm */; };
+		07DF21792F3EE0E500E2725C /* native_camera_plugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF216B2F3EE0E500E2725C /* native_camera_plugin.mm */; };
+		07DF217A2F3EE0E500E2725C /* NativeCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DF216F2F3EE0E500E2725C /* NativeCamera.swift */; };
+		07DF217B2F3EE0E500E2725C /* FrameSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DF21662F3EE0E500E2725C /* FrameSize.swift */; };
 		94A1B0B2910D06DA0F4D3D3C /* Pods_native_camera_plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 380C444E6383B0C8ACA7CA7D /* Pods_native_camera_plugin.framework */; };
 /* End PBXBuildFile section */
 
@@ -34,31 +34,29 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		071584792F19EAAF00FB048C /* camera_info_wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera_info_wrapper.h; sourceTree = "<group>"; };
-		0715847A2F19EAAF00FB048C /* camera_info_wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = camera_info_wrapper.mm; sourceTree = "<group>"; };
-		0715847B2F19EAAF00FB048C /* CameraInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraInfo.swift; sourceTree = "<group>"; };
-		0715847C2F19EAAF00FB048C /* frame_info_wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame_info_wrapper.h; sourceTree = "<group>"; };
-		0715847D2F19EAAF00FB048C /* frame_info_wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = frame_info_wrapper.mm; sourceTree = "<group>"; };
-		0715847E2F19EAAF00FB048C /* frame_request.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame_request.h; sourceTree = "<group>"; };
-		0715847F2F19EAAF00FB048C /* frame_request.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = frame_request.mm; sourceTree = "<group>"; };
-		071584802F19EAAF00FB048C /* frame_size_wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame_size_wrapper.h; sourceTree = "<group>"; };
-		071584812F19EAAF00FB048C /* frame_size_wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = frame_size_wrapper.mm; sourceTree = "<group>"; };
-		071584822F19EAAF00FB048C /* FrameInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameInfo.swift; sourceTree = "<group>"; };
-		071584832F19EAAF00FB048C /* FrameSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameSize.swift; sourceTree = "<group>"; };
-		073B52C32ECF241C0063663B /* native_camera_plugin-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "native_camera_plugin-Bridging-Header.h"; sourceTree = "<group>"; };
-		076A67052F0F6ECC00EFE1F3 /* native_camera_plugin_bootstrap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_camera_plugin_bootstrap.h; sourceTree = "<group>"; };
-		076A67062F0F6ECC00EFE1F3 /* native_camera_plugin_bootstrap.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = native_camera_plugin_bootstrap.mm; sourceTree = "<group>"; };
-		07787D0C2EDA6C22009B6F5F /* native_camera_logger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_camera_logger.h; sourceTree = "<group>"; };
-		07799B7F2EEE73CC00619332 /* NativeCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCamera.swift; sourceTree = "<group>"; };
-		078173312EF018C00087ACA0 /* native_camera_logger.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = native_camera_logger.mm; sourceTree = "<group>"; };
+		07DF215C2F3EE0E500E2725C /* camera_info_wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera_info_wrapper.h; sourceTree = "<group>"; };
+		07DF215D2F3EE0E500E2725C /* camera_info_wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = camera_info_wrapper.mm; sourceTree = "<group>"; };
+		07DF215E2F3EE0E500E2725C /* CameraInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraInfo.swift; sourceTree = "<group>"; };
+		07DF215F2F3EE0E500E2725C /* frame_info_wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame_info_wrapper.h; sourceTree = "<group>"; };
+		07DF21602F3EE0E500E2725C /* frame_info_wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = frame_info_wrapper.mm; sourceTree = "<group>"; };
+		07DF21612F3EE0E500E2725C /* frame_request.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame_request.h; sourceTree = "<group>"; };
+		07DF21622F3EE0E500E2725C /* frame_request.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = frame_request.mm; sourceTree = "<group>"; };
+		07DF21632F3EE0E500E2725C /* frame_size_wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame_size_wrapper.h; sourceTree = "<group>"; };
+		07DF21642F3EE0E500E2725C /* frame_size_wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = frame_size_wrapper.mm; sourceTree = "<group>"; };
+		07DF21652F3EE0E500E2725C /* FrameInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameInfo.swift; sourceTree = "<group>"; };
+		07DF21662F3EE0E500E2725C /* FrameSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameSize.swift; sourceTree = "<group>"; };
+		07DF21682F3EE0E500E2725C /* native_camera_logger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_camera_logger.h; sourceTree = "<group>"; };
+		07DF21692F3EE0E500E2725C /* native_camera_logger.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = native_camera_logger.mm; sourceTree = "<group>"; };
+		07DF216A2F3EE0E500E2725C /* native_camera_plugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_camera_plugin.h; sourceTree = "<group>"; };
+		07DF216B2F3EE0E500E2725C /* native_camera_plugin.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = native_camera_plugin.mm; sourceTree = "<group>"; };
+		07DF216C2F3EE0E500E2725C /* native_camera_plugin_bootstrap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_camera_plugin_bootstrap.h; sourceTree = "<group>"; };
+		07DF216D2F3EE0E500E2725C /* native_camera_plugin_bootstrap.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = native_camera_plugin_bootstrap.mm; sourceTree = "<group>"; };
+		07DF216E2F3EE0E500E2725C /* native_camera_plugin-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "native_camera_plugin-Bridging-Header.h"; sourceTree = "<group>"; };
+		07DF216F2F3EE0E500E2725C /* NativeCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCamera.swift; sourceTree = "<group>"; };
 		1A3D1E30D9DC57319C20B62B /* Pods-native_camera_plugin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-native_camera_plugin.release.xcconfig"; path = "Target Support Files/Pods-native_camera_plugin/Pods-native_camera_plugin.release.xcconfig"; sourceTree = "<group>"; };
 		380C444E6383B0C8ACA7CA7D /* Pods_native_camera_plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_native_camera_plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		403D7C7BCFBA671DEF15AE95 /* Pods-native_camera_plugin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-native_camera_plugin.debug.xcconfig"; path = "Target Support Files/Pods-native_camera_plugin/Pods-native_camera_plugin.debug.xcconfig"; sourceTree = "<group>"; };
 		90CAAA9424E71FF10013969F /* libnative_camera_plugin.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnative_camera_plugin.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		90CAAA9724E71FF10013969F /* native_camera_plugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_camera_plugin.h; sourceTree = "<group>"; };
-		90CAAA9824E71FF10013969F /* native_camera_plugin.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = native_camera_plugin.mm; sourceTree = "<group>"; };
-		AAE936A0178A8EA9BB753CEA /* Pods-native_camera_plugin_implementation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-native_camera_plugin_implementation.debug.xcconfig"; path = "Target Support Files/Pods-inapp_review_plugin/Pods-native_camera_plugin_implementation.debug.xcconfig"; sourceTree = "<group>"; };
-		D5F7A9D28867FD798F31BF3B /* Pods-native_camera_plugin_implementation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-native_camera_plugin_implementation.release.xcconfig"; path = "Target Support Files/Pods-inapp_review_plugin/Pods-native_camera_plugin_implementation.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,22 +71,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		071584842F19EAAF00FB048C /* model */ = {
+		07DF21672F3EE0E500E2725C /* model */ = {
 			isa = PBXGroup;
 			children = (
-				071584792F19EAAF00FB048C /* camera_info_wrapper.h */,
-				0715847A2F19EAAF00FB048C /* camera_info_wrapper.mm */,
-				0715847B2F19EAAF00FB048C /* CameraInfo.swift */,
-				0715847C2F19EAAF00FB048C /* frame_info_wrapper.h */,
-				0715847D2F19EAAF00FB048C /* frame_info_wrapper.mm */,
-				0715847E2F19EAAF00FB048C /* frame_request.h */,
-				0715847F2F19EAAF00FB048C /* frame_request.mm */,
-				071584802F19EAAF00FB048C /* frame_size_wrapper.h */,
-				071584812F19EAAF00FB048C /* frame_size_wrapper.mm */,
-				071584822F19EAAF00FB048C /* FrameInfo.swift */,
-				071584832F19EAAF00FB048C /* FrameSize.swift */,
+				07DF215C2F3EE0E500E2725C /* camera_info_wrapper.h */,
+				07DF215D2F3EE0E500E2725C /* camera_info_wrapper.mm */,
+				07DF215E2F3EE0E500E2725C /* CameraInfo.swift */,
+				07DF215F2F3EE0E500E2725C /* frame_info_wrapper.h */,
+				07DF21602F3EE0E500E2725C /* frame_info_wrapper.mm */,
+				07DF21612F3EE0E500E2725C /* frame_request.h */,
+				07DF21622F3EE0E500E2725C /* frame_request.mm */,
+				07DF21632F3EE0E500E2725C /* frame_size_wrapper.h */,
+				07DF21642F3EE0E500E2725C /* frame_size_wrapper.mm */,
+				07DF21652F3EE0E500E2725C /* FrameInfo.swift */,
+				07DF21662F3EE0E500E2725C /* FrameSize.swift */,
 			);
 			path = model;
+			sourceTree = "<group>";
+		};
+		07DF21702F3EE0E500E2725C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				07DF21672F3EE0E500E2725C /* model */,
+				07DF21682F3EE0E500E2725C /* native_camera_logger.h */,
+				07DF21692F3EE0E500E2725C /* native_camera_logger.mm */,
+				07DF216A2F3EE0E500E2725C /* native_camera_plugin.h */,
+				07DF216B2F3EE0E500E2725C /* native_camera_plugin.mm */,
+				07DF216C2F3EE0E500E2725C /* native_camera_plugin_bootstrap.h */,
+				07DF216D2F3EE0E500E2725C /* native_camera_plugin_bootstrap.mm */,
+				07DF216E2F3EE0E500E2725C /* native_camera_plugin-Bridging-Header.h */,
+				07DF216F2F3EE0E500E2725C /* NativeCamera.swift */,
+			);
+			path = src;
 			sourceTree = "<group>";
 		};
 		66EA7AD27171A8F93A267403 /* Pods */ = {
@@ -96,8 +110,6 @@
 			children = (
 				403D7C7BCFBA671DEF15AE95 /* Pods-native_camera_plugin.debug.xcconfig */,
 				1A3D1E30D9DC57319C20B62B /* Pods-native_camera_plugin.release.xcconfig */,
-				AAE936A0178A8EA9BB753CEA /* Pods-native_camera_plugin_implementation.debug.xcconfig */,
-				D5F7A9D28867FD798F31BF3B /* Pods-native_camera_plugin_implementation.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -105,7 +117,7 @@
 		90CAAA8B24E71FF10013969F = {
 			isa = PBXGroup;
 			children = (
-				90CAAA9624E71FF10013969F /* native_camera */,
+				07DF21702F3EE0E500E2725C /* src */,
 				90CAAA9524E71FF10013969F /* Products */,
 				90CAAAA824E72A8A0013969F /* Frameworks */,
 				66EA7AD27171A8F93A267403 /* Pods */,
@@ -118,22 +130,6 @@
 				90CAAA9424E71FF10013969F /* libnative_camera_plugin.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		90CAAA9624E71FF10013969F /* native_camera */ = {
-			isa = PBXGroup;
-			children = (
-				071584842F19EAAF00FB048C /* model */,
-				076A67052F0F6ECC00EFE1F3 /* native_camera_plugin_bootstrap.h */,
-				076A67062F0F6ECC00EFE1F3 /* native_camera_plugin_bootstrap.mm */,
-				07799B7F2EEE73CC00619332 /* NativeCamera.swift */,
-				07787D0C2EDA6C22009B6F5F /* native_camera_logger.h */,
-				078173312EF018C00087ACA0 /* native_camera_logger.mm */,
-				073B52C32ECF241C0063663B /* native_camera_plugin-Bridging-Header.h */,
-				90CAAA9724E71FF10013969F /* native_camera_plugin.h */,
-				90CAAA9824E71FF10013969F /* native_camera_plugin.mm */,
-			);
-			path = native_camera;
 			sourceTree = "<group>";
 		};
 		90CAAAA824E72A8A0013969F /* Frameworks */ = {
@@ -228,17 +224,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				071584852F19EAAF00FB048C /* camera_info_wrapper.mm in Sources */,
-				071584862F19EAAF00FB048C /* frame_size_wrapper.mm in Sources */,
-				071584872F19EAAF00FB048C /* FrameInfo.swift in Sources */,
-				071584882F19EAAF00FB048C /* frame_info_wrapper.mm in Sources */,
-				071584892F19EAAF00FB048C /* FrameSize.swift in Sources */,
-				0715848A2F19EAAF00FB048C /* CameraInfo.swift in Sources */,
-				0715848B2F19EAAF00FB048C /* frame_request.mm in Sources */,
-				076A67072F0F6ECC00EFE1F3 /* native_camera_plugin_bootstrap.mm in Sources */,
-				078173322EF018C10087ACA0 /* native_camera_logger.mm in Sources */,
-				07799B802EEE73CC00619332 /* NativeCamera.swift in Sources */,
-				90CAAA9924E71FF10013969F /* native_camera_plugin.mm in Sources */,
+				07DF21712F3EE0E500E2725C /* CameraInfo.swift in Sources */,
+				07DF21722F3EE0E500E2725C /* native_camera_logger.mm in Sources */,
+				07DF21732F3EE0E500E2725C /* frame_size_wrapper.mm in Sources */,
+				07DF21742F3EE0E500E2725C /* frame_request.mm in Sources */,
+				07DF21752F3EE0E500E2725C /* native_camera_plugin_bootstrap.mm in Sources */,
+				07DF21762F3EE0E500E2725C /* frame_info_wrapper.mm in Sources */,
+				07DF21772F3EE0E500E2725C /* FrameInfo.swift in Sources */,
+				07DF21782F3EE0E500E2725C /* camera_info_wrapper.mm in Sources */,
+				07DF21792F3EE0E500E2725C /* native_camera_plugin.mm in Sources */,
+				07DF217A2F3EE0E500E2725C /* NativeCamera.swift in Sources */,
+				07DF217B2F3EE0E500E2725C /* FrameSize.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,9 +421,7 @@
 					"-isystem",
 					"$(SRCROOT)/godot/platform/ios",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "src/native_camera_plugin-Bridging-Header.h";
@@ -498,9 +492,7 @@
 					"-isystem",
 					"$(SRCROOT)/godot/platform/ios",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "src/native_camera_plugin-Bridging-Header.h";

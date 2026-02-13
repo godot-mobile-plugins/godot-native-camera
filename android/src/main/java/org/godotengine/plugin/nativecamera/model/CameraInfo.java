@@ -10,6 +10,9 @@ import android.util.Size;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraCharacteristics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.godotengine.godot.Dictionary;
 
 
@@ -43,7 +46,7 @@ public class CameraInfo {
 					
 		List<Dictionary> dictList = new ArrayList<>();
 		for (Size size : sizes) {
-			dictList.add(new FrameSize(size).buildRawData())
+			dictList.add(new FrameSize(size).buildRawData());
 		}
 		dict.put(DATA_OUTPUT_SIZES_PROPERTY, dictList.toArray());
 
