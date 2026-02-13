@@ -6,7 +6,7 @@
 
 ---
 
-# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="24"> Godot Native Camera Plugin
+# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> Godot Native Camera Plugin
 
 A Godot plugin that provides a **unified camera capture interface** for **Android** and **iOS** using native platform APIs. It enables real‑time camera frame streaming directly into Godot with configurable resolution, rotation, frame skipping, and optional grayscale output.
 
@@ -21,7 +21,7 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 
 ---
 
-## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="20"> Table of Contents
+## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Table of Contents
 
 * [Installation](#installation)
 * [Usage](#usage)
@@ -38,7 +38,7 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 
 <a name="installation"></a>
 
-## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="20"> Installation
+## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Installation
 
 *Before installing this plugin, make sure to uninstall any previous versions of the same plugin.*
 
@@ -49,7 +49,7 @@ There are two ways to install the `NativeCamera` plugin into your project:
 * Through the Godot Editor AssetLib
 * Manually by downloading archives from GitHub
 
-### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="18"> Installing via AssetLib
+### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="18"> Installing via AssetLib
 
 Steps:
 
@@ -62,11 +62,11 @@ Steps:
   * Click **Install**
 * Enable the plugin from **Project → Project Settings → Plugins**
 
-#### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="16"> Installing both Android and iOS versions
+#### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> Installing both Android and iOS versions
 
 When installing both platforms via AssetLib, Godot may warn that some files conflict and will not be installed. This is expected and safe to ignore, as both platforms share the same addon interface code.
 
-### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="18"> Installing manually
+### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="18"> Installing manually
 
 Steps:
 
@@ -79,7 +79,7 @@ Steps:
 
 <a name="usage"></a>
 
-## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="20"> Usage
+## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Usage
 
 Add a `NativeCamera` node to your main scene or register it as an autoload (singleton).
 
@@ -129,7 +129,7 @@ func _on_frame_available(frame: FrameInfo) -> void:
 
 <a name="signals"></a>
 
-## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="20"> Signals
+## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Signals
 
 Register listeners on the `NativeCamera` node:
 
@@ -145,7 +145,7 @@ Register listeners on the `NativeCamera` node:
 
 <a name="methods"></a>
 
-## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="20"> Methods
+## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Methods
 
 * `request_permission()`
 
@@ -167,9 +167,11 @@ Register listeners on the `NativeCamera` node:
 
 <a name="classes"></a>
 
-## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="20"> Classes
+## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Classes
 
-### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="16"> CameraInfo
+This section documents the GDScript interface classes implemented and exposed by the plugin.
+
+### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> CameraInfo
 
 Encapsulates camera metadata provided by the mobile OS.
 
@@ -181,7 +183,7 @@ Encapsulates camera metadata provided by the mobile OS.
 
 ---
 
-### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="16"> FeedRequest
+### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FeedRequest
 
 Defines configuration parameters for starting a camera feed.
 
@@ -197,7 +199,7 @@ Supports fluent chaining via setter methods.
 
 ---
 
-### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="16"> FrameInfo
+### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FrameInfo
 
 Represents a single captured frame.
 
@@ -212,7 +214,7 @@ Represents a single captured frame.
 
 ---
 
-### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="16"> FrameSize
+### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FrameSize
 
 Represents a supported camera output resolution.
 
@@ -226,7 +228,7 @@ Represents a supported camera output resolution.
 
 <a name="platform-specific-notes"></a>
 
-## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="20"> Platform-Specific Notes
+## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Platform-Specific Notes
 
 ### Android
 
@@ -254,23 +256,24 @@ Helpful resources:
 
 <a name="links"></a>
 
-# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="24"> Links
+# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> Links
 
-* [AssetLib Entry Android](https://godotengine.org/asset-library/asset/4582)
-* [AssetLib Entry iOS](https://godotengine.org/asset-library/asset/4581)
+* [AssetLib Entry Android](https://godotengine.org/asset-library/asset/4675)
+* [AssetLib Entry iOS](https://godotengine.org/asset-library/asset/4676)
 
 ---
 
-# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="24"> All Plugins
+# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> All Plugins
 
 | Plugin | Android | iOS | Free | Open Source | License |
 | :--- | :---: | :---: | :---: | :---: | :---: |
+| [Admob](https://github.com/godot-sdk-integrations/godot-admob) | ✅ | ✅ | ✅ | ✅ | MIT |
 | [Notification Scheduler](https://github.com/godot-mobile-plugins/godot-notification-scheduler) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [Admob](https://github.com/godot-mobile-plugins/godot-admob) | ✅ | ✅ | ✅ | ✅ | MIT |
 | [Deeplink](https://github.com/godot-mobile-plugins/godot-deeplink) | ✅ | ✅ | ✅ | ✅ | MIT |
 | [Share](https://github.com/godot-mobile-plugins/godot-share) | ✅ | ✅ | ✅ | ✅ | MIT |
 | [In-App Review](https://github.com/godot-mobile-plugins/godot-inapp-review) | ✅ | ✅ | ✅ | ✅ | MIT |
 | [Native Camera](https://github.com/godot-mobile-plugins/godot-native-camera) | ✅ | ✅ | ✅ | ✅ | MIT |
+| [Connection State](https://github.com/godot-mobile-plugins/godot-connection-state) | ✅ | ✅ | ✅ | ✅ | MIT |
 | [OAuth 2.0](https://github.com/godot-mobile-plugins/godot-oauth2) | ✅ | ✅ | ✅ | ✅ | MIT |
 | [QR](https://github.com/godot-mobile-plugins/godot-qr) | ✅ | ✅ | ✅ | ✅ | MIT |
 
@@ -278,9 +281,11 @@ Helpful resources:
 
 <a name="credits"></a>
 
-# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="24"> Credits
+# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> Credits
 
 Developed by [Cengiz](https://github.com/cengiz-pz)
+
+Based on [Godot Mobile Plugin Template](https://github.com/godot-mobile-plugins/godot-plugin-template)
 
 Original repository: [Godot Native Camera Plugin](https://github.com/godot-mobile-plugins/godot-native-camera)
 
@@ -288,6 +293,6 @@ Original repository: [Godot Native Camera Plugin](https://github.com/godot-mobil
 
 <a name="contributing"></a>
 
-# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/icon.png" width="24"> Contributing
+# <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> Contributing
 
 Contributions are welcome. Please see the [contributing guide](https://github.com/godot-mobile-plugins/godot-native-camera?tab=contributing-ov-file) in the repository for details.
