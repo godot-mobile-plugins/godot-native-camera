@@ -1,10 +1,19 @@
 <p align="center">
-	<img width="256" height="256" src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/demo/assets/native-camera-android.png">
+	<img width="128" height="128" src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/demo/assets/native-camera-android.png">
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<img width="256" height="256" src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/demo/assets/native-camera-ios.png">
+	<img width="128" height="128" src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/demo/assets/native-camera-ios.png">
 </p>
 
----
+<br>
+
+<div align="center">
+	<a href="https://github.com/godot-mobile-plugins/godot-native-camera"><img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-native-camera?label=Stars&style=plastic" height="40"/></a>
+	<img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-native-camera?label=Latest%20Release&style=plastic" height="40"/>
+	<img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-native-camera/latest/total?label=Downloads&style=plastic" height="40"/>
+	<img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-native-camera/total?label=Total%20Downloads&style=plastic" height="40"/>
+</div>
+
+<br>
 
 # <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> Godot Native Camera Plugin
 
@@ -19,7 +28,7 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 * Configurable resolution, rotation, frame skipping, and grayscale capture
 * Designed for real‑time use cases (CV, AR preprocessing, custom rendering)
 
----
+<br>
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Table of Contents
 
@@ -34,7 +43,7 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 * [Credits](#credits)
 * [Contributing](#contributing)
 
----
+<br>
 
 <a name="installation"></a>
 
@@ -75,7 +84,7 @@ Steps:
 * Copy the contents into your Godot project root
 * Enable the plugin via **Project → Project Settings → Plugins**
 
----
+<br>
 
 <a name="usage"></a>
 
@@ -97,16 +106,13 @@ Typical workflow:
 @onready var camera := $NativeCamera
 
 func _ready():
-	camera.permission_result.connect(_on_permission_result)
+	camera.camera_permission_granted.connect(_on_camera_permission_granted)
+	camera.camera_permission_denied.connect(_on_camera_permission_denied)
 	camera.frame_available.connect(_on_frame_available)
-	camera.request_permission()
+	camera.request_camera_permission()
 
-func _on_permission_result(granted: bool) -> void:
-	if not granted:
-		push_error("Camera permission denied")
-		return
-
-	var cameras := camera.get_cameras()
+func _on_camera_permission_granted() -> void:
+	var cameras := camera.get_all_cameras()
 	if cameras.is_empty():
 		return
 
@@ -118,14 +124,17 @@ func _on_permission_result(granted: bool) -> void:
 		.set_rotation(90)
 		.set_grayscale(false)
 
-	camera.start_feed(request)
+	camera.start(request)
+
+func _on_camera_permission_denied() -> void:
+	push_error("Camera permission denied")
 
 func _on_frame_available(frame: FrameInfo) -> void:
 	var img := frame.get_image()
 	# Use the image or raw buffer here
 ```
 
----
+<br>
 
 <a name="signals"></a>
 
@@ -133,27 +142,39 @@ func _on_frame_available(frame: FrameInfo) -> void:
 
 Register listeners on the `NativeCamera` node:
 
-* `permission_result(granted: bool)`
+* `camera_permission_granted()`
 
-  * Emitted after a camera permission request completes
+  * Emitted when camera permission is granted by the user
+
+* `camera_permission_denied()`
+
+  * Emitted when camera permission is denied by the user
 
 * `frame_available(frame: FrameInfo)`
 
   * Emitted when a new camera frame is available
 
----
+<br>
 
 <a name="methods"></a>
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Methods
 
-* `request_permission()`
+* `has_camera_permission() -> bool`
+
+  * Returns whether camera permission has already been granted
+
+* `request_camera_permission()`
 
   * Requests camera permission from the OS
 
-* `get_cameras() -> Array[CameraInfo]`
+* `get_all_cameras() -> Array[CameraInfo]`
 
   * Returns a list of available cameras
+
+* `create_feed_request() -> FeedRequest`
+
+  * Creates a `FeedRequest` pre-populated with the node's exported property values (`frame_width`, `frame_height`, `frames_to_skip`, `frame_rotation`, `is_grayscale`)
 
 * `start(request: FeedRequest)`
 
@@ -163,7 +184,7 @@ Register listeners on the `NativeCamera` node:
 
   * Stops the active camera feed
 
----
+<br>
 
 <a name="classes"></a>
 
@@ -181,7 +202,7 @@ Encapsulates camera metadata provided by the mobile OS.
 * `is_front_facing() -> bool`
 * `get_output_sizes() -> Array[FrameSize]`
 
----
+<br>
 
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FeedRequest
 
@@ -197,7 +218,7 @@ Defines configuration parameters for starting a camera feed.
 
 Supports fluent chaining via setter methods.
 
----
+<br>
 
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FrameInfo
 
@@ -212,7 +233,7 @@ Represents a single captured frame.
 * `is_grayscale() -> bool`
 * `get_image() -> Image`
 
----
+<br>
 
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FrameSize
 
@@ -224,7 +245,7 @@ Represents a supported camera output resolution.
 * `get_height() -> int`
 * `get_raw_data() -> Dictionary`
 
----
+<br>
 
 <a name="platform-specific-notes"></a>
 
@@ -252,7 +273,7 @@ Helpful resources:
 * Camera permission must be declared in the generated Xcode project
 * Use Xcode console logs for debugging
 
----
+<br>
 
 <a name="links"></a>
 
@@ -261,24 +282,26 @@ Helpful resources:
 * [AssetLib Entry Android](https://godotengine.org/asset-library/asset/4675)
 * [AssetLib Entry iOS](https://godotengine.org/asset-library/asset/4676)
 
----
+<br>
+
+<a name="all-plugins"></a>
 
 # <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> All Plugins
 
-| Plugin | Android | iOS | Free | Open Source | License |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| [Admob](https://github.com/godot-sdk-integrations/godot-admob) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [Notification Scheduler](https://github.com/godot-mobile-plugins/godot-notification-scheduler) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [Deeplink](https://github.com/godot-mobile-plugins/godot-deeplink) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [Share](https://github.com/godot-mobile-plugins/godot-share) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [In-App Review](https://github.com/godot-mobile-plugins/godot-inapp-review) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [Native Camera](https://github.com/godot-mobile-plugins/godot-native-camera) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [Connection State](https://github.com/godot-mobile-plugins/godot-connection-state) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [OAuth 2.0](https://github.com/godot-mobile-plugins/godot-oauth2) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [QR](https://github.com/godot-mobile-plugins/godot-qr) | ✅ | ✅ | ✅ | ✅ | MIT |
-| [Firebase](https://github.com/godot-mobile-plugins/godot-firebase) | ✅ | ✅ | ✅ | ✅ | MIT |
+| ✦ | Plugin | Android | iOS | Latest Release | Downloads | Stars |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| <img src="https://raw.githubusercontent.com/godot-sdk-integrations/godot-admob/main/addon/src/icon.png" width="20"> | [Admob](https://github.com/godot-sdk-integrations/godot-admob) | ✅ | ✅ | <a href="https://github.com/godot-sdk-integrations/godot-admob/releases"><img src="https://img.shields.io/github/release-date/godot-sdk-integrations/godot-admob?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-sdk-integrations/godot-admob?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-sdk-integrations/godot-admob/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-sdk-integrations/godot-admob/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-sdk-integrations/godot-admob?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-connection-state/main/addon/src/icon.png" width="20"> | [Connection State](https://github.com/godot-mobile-plugins/godot-connection-state) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-connection-state/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-connection-state?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-connection-state?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-connection-state/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-connection-state/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-connection-state?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-deeplink/main/addon/src/icon.png" width="20"> | [Deeplink](https://github.com/godot-mobile-plugins/godot-deeplink) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-deeplink/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-deeplink?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-deeplink?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-deeplink/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-deeplink/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-deeplink?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-firebase/main/addon/src/icon.png" width="20"> | [Firebase](https://github.com/godot-mobile-plugins/godot-firebase) | ✅ | ✅ | - <!-- <a href="https://github.com/godot-mobile-plugins/godot-firebase/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-firebase?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-firebase?label=%20" /></a> --> | - <!-- <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-firebase/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-firebase/total?label=%20" /> --> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-firebase?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-inapp-review/main/addon/src/icon.png" width="20"> | [In-App Review](https://github.com/godot-mobile-plugins/godot-inapp-review) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-inapp-review/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-inapp-review?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-inapp-review?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-inapp-review/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-inapp-review/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-inapp-review?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> | [Native Camera](https://github.com/godot-mobile-plugins/godot-native-camera) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-native-camera/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-native-camera?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-native-camera?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-native-camera/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-native-camera/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-native-camera?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-notification-scheduler/main/addon/src/icon.png" width="20"> | [Notification Scheduler](https://github.com/godot-mobile-plugins/godot-notification-scheduler) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-notification-scheduler/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-notification-scheduler?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-notification-scheduler?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-notification-scheduler/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-notification-scheduler/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-notification-scheduler?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-oauth2/main/addon/src/icon.png" width="20"> | [OAuth 2.0](https://github.com/godot-mobile-plugins/godot-oauth2) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-oauth2/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-oauth2?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-oauth2?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-oauth2/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-oauth2/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-oauth2?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-qr/main/addon/src/icon.png" width="20"> | [QR](https://github.com/godot-mobile-plugins/godot-qr) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-qr/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-qr?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-qr?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-qr/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-qr/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-qr?style=plastic&label=%20" /> |
+| <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-share/main/addon/src/icon.png" width="20"> | [Share](https://github.com/godot-mobile-plugins/godot-share) | ✅ | ✅ | <a href="https://github.com/godot-mobile-plugins/godot-share/releases"><img src="https://img.shields.io/github/release-date/godot-mobile-plugins/godot-share?label=%20" /> <img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-share?label=%20" /></a> | <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-share/latest/total?label=latest" /> <img src="https://img.shields.io/github/downloads/godot-mobile-plugins/godot-share/total?label=total" /> | <img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-share?style=plastic&label=%20" /> |
 
----
+<br>
 
 <a name="credits"></a>
 
@@ -286,14 +309,33 @@ Helpful resources:
 
 Developed by [Cengiz](https://github.com/cengiz-pz)
 
-Based on [Godot Mobile Plugin Template](https://github.com/godot-mobile-plugins/godot-plugin-template)
+Based on [Godot Mobile Plugin Template v4](https://github.com/godot-mobile-plugins/godot-plugin-template/tree/v4)
 
 Original repository: [Godot Native Camera Plugin](https://github.com/godot-mobile-plugins/godot-native-camera)
 
----
+<br>
 
 <a name="contributing"></a>
 
 # <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="24"> Contributing
 
 Contributions are welcome. Please see the [contributing guide](https://github.com/godot-mobile-plugins/godot-native-camera?tab=contributing-ov-file) in the repository for details.
+
+<br>
+
+# 💖 Support the Project
+
+If this plugin has helped you, consider supporting its development! Every bit of support helps keep the plugin updated and bug-free.
+
+| ✦ | Ways to Help | How to do it |
+| :--- | :--- | :--- |
+|✨⭐| **Spread the Word** | [Star this repo](https://github.com/godot-mobile-plugins/godot-native-camera/stargazers) to help others find it. |
+|💡✨| **Give Feedback** | [Open an issue](https://github.com/godot-mobile-plugins/godot-native-camera/issues) or [suggest a feature](https://github.com/godot-mobile-plugins/godot-native-camera/issues/new). |
+|🧩| **Contribute** | [Submit a PR](https://github.com/godot-mobile-plugins/godot-native-camera?tab=contributing-ov-file) to help improve the codebase. |
+|❤️| **Buy a Coffee** | Support the maintainers on GitHub Sponsors or other platforms. |
+
+<br>
+
+## ⭐ Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=godot-mobile-plugins/godot-native-camera&type=Date)](https://star-history.com/#godot-mobile-plugins/godot-native-camera&Date)
+
