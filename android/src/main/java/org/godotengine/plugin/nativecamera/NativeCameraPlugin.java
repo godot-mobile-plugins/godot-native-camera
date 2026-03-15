@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
@@ -23,7 +22,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-import android.view.View;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -148,7 +146,9 @@ public class NativeCameraPlugin extends GodotPlugin {
 			return;
 		}
 
-		if (running) return;
+		if (running) {
+			return;
+		}
 
 		running = true;
 		startThread();
@@ -214,8 +214,10 @@ public class NativeCameraPlugin extends GodotPlugin {
 	void emitFrame(byte[] buffer, int width, int height, int rotation, boolean isGrayscale) {
 		Activity activity = getActivity();
 
-		Log.d(LOG_TAG, String.format("emitFrame(): Emitting frame buffer size: %d image size: %dx%d, rotation: %d, gray?: %b",
-				buffer.length, width, height, rotation, isGrayscale));
+		Log.d(LOG_TAG, String.format(
+				"emitFrame(): Emitting frame buffer size: %d image size: %dx%d, rotation: %d, gray?: %b",
+				buffer.length, width, height, rotation, isGrayscale
+		));
 
 		// Run on Android UI thread -> Godot main thread
 		activity.runOnUiThread(() -> {
@@ -231,8 +233,15 @@ public class NativeCameraPlugin extends GodotPlugin {
 			createCameraPreviewSession();
 		}
 
-		@Override public void onDisconnected(CameraDevice cameraDevice) { cameraDevice.close(); }
-		@Override public void onError(CameraDevice cameraDevice, int error) { cameraDevice.close(); }
+		@Override
+		public void onDisconnected(CameraDevice cameraDevice) {
+			cameraDevice.close();
+		}
+
+		@Override
+		public void onError(CameraDevice cameraDevice, int error) {
+			cameraDevice.close();
+		}
 	};
 
 	private void createCameraPreviewSession() {
@@ -242,7 +251,7 @@ public class NativeCameraPlugin extends GodotPlugin {
 				OutputConfiguration outputConfig = new OutputConfiguration(reader.getSurface());
 
 				// Ensure the callback runs on our background thread
-				Executor executor = bgHandler::post; 
+				Executor executor = bgHandler::post;
 
 				SessionConfiguration sessionConfig = new SessionConfiguration(
 						SessionConfiguration.SESSION_REGULAR,
@@ -251,7 +260,7 @@ public class NativeCameraPlugin extends GodotPlugin {
 						sessionCallback
 				);
 				camera.createCaptureSession(sessionConfig);
-			} else {// Use the annotation to suppress the warning for the legacy path
+			} else {
 				// This is necessary for devices running Android 8.1 or lower
 				createLegacyCaptureSession();
 			}
@@ -275,26 +284,30 @@ public class NativeCameraPlugin extends GodotPlugin {
 				public void onConfigured(CameraCaptureSession captureSession) {
 					session = captureSession;
 					try {
-						CaptureRequest.Builder req =
-								camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+						CaptureRequest.Builder req = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
 						req.addTarget(reader.getSurface());
-						req.set(CaptureRequest.CONTROL_AF_MODE,
-								CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+						req.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 						session.setRepeatingRequest(req.build(), null, bgHandler);
 					} catch (CameraAccessException e) {
 						e.printStackTrace();
 					}
 				}
 
-				@Override public void onConfigureFailed(CameraCaptureSession session) {}
+				@Override
+				public void onConfigureFailed(CameraCaptureSession session) {
+				}
 			};
 
 	private void onImageAvailable(ImageReader reader) {
-		if (!running) return;
+		if (!running) {
+			return;
+		}
 
 		try {
 			Image image = reader.acquireLatestImage();
-			if (image == null) return;
+			if (image == null) {
+				return;
+			}
 
 			if (!running) {
 				image.close();
@@ -443,10 +456,10 @@ public class NativeCameraPlugin extends GodotPlugin {
 	}
 
 	private static RotationResult rotateRGBA(
-		byte[] src,
-		int width,
-		int height,
-		int rotation
+			byte[] src,
+			int width,
+			int height,
+			int rotation
 	) {
 		rotation = ((rotation % 360) + 360) % 360;
 
@@ -463,7 +476,8 @@ public class NativeCameraPlugin extends GodotPlugin {
 			for (int x = 0; x < width; x++) {
 				int srcIndex = (y * width + x) * 4;
 
-				int dx = 0, dy = 0;
+				int dx = 0;
+				int dy = 0;
 
 				switch (rotation) {
 					case 90:
@@ -493,10 +507,10 @@ public class NativeCameraPlugin extends GodotPlugin {
 	}
 
 	private static RotationResult rotateGray(
-		byte[] src,
-		int width,
-		int height,
-		int rotation
+			byte[] src,
+			int width,
+			int height,
+			int rotation
 	) {
 		rotation = ((rotation % 360) + 360) % 360;
 
@@ -513,7 +527,8 @@ public class NativeCameraPlugin extends GodotPlugin {
 			for (int x = 0; x < width; x++) {
 				int srcIndex = y * width + x;
 
-				int dx = 0, dy = 0;
+				int dx = 0;
+				int dy = 0;
 
 				switch (rotation) {
 					case 90:

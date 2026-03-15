@@ -6,8 +6,8 @@
 @icon("icon.png")
 class_name NativeCamera extends Node
 
-signal camera_permission_granted()
-signal camera_permission_denied()
+signal camera_permission_granted
+signal camera_permission_denied
 signal frame_available(a_info: FrameInfo)
 
 const PLUGIN_SINGLETON_NAME: String = "@pluginName@"
@@ -18,7 +18,8 @@ const PLUGIN_SINGLETON_NAME: String = "@pluginName@"
 ## Height of the requested camera frame in pixels.
 @export var frame_height: int = FeedRequest.DEFAULT_HEIGHT
 
-## The number of frames to skip before emitting next frame. If conducting heaving processing of each frame, then increase this value to improve perfomance.
+## The number of frames to skip before emitting next frame. If conducting heaving processing of each frame,
+## then increase this value to improve perfomance.
 @export var frames_to_skip: int = FeedRequest.DEFAULT_FRAMES_TO_SKIP
 
 ## The rotation to be applied to the frame in degrees. Valid values are 0, 90, 180, and 270.
@@ -87,12 +88,15 @@ func get_all_cameras() -> Array[CameraInfo]:
 
 
 func create_feed_request() -> FeedRequest:
-	return (FeedRequest.new()
-				.set_width(frame_width)
-				.set_height(frame_height)
-				.set_frames_to_skip(frames_to_skip)
-				.set_rotation(frame_rotation)
-				.set_grayscale(is_grayscale))
+	return (
+		FeedRequest
+		. new()
+		. set_width(frame_width)
+		. set_height(frame_height)
+		. set_frames_to_skip(frames_to_skip)
+		. set_rotation(frame_rotation)
+		. set_grayscale(is_grayscale)
+	)
 
 
 func start(a_request: FeedRequest) -> void:

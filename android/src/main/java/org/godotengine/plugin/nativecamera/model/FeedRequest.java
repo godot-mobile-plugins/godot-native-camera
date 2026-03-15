@@ -18,48 +18,48 @@ public class FeedRequest {
 	private static final String DATA_ROTATION_PROPERTY = "rotation";
 	private static final String DATA_IS_GRAYSCALE_PROPERTY = "is_grayscale";
 
-	private Dictionary _data;
+	private Dictionary data;
 
 
 	public FeedRequest(Dictionary data) {
-		this._data = data;
+		this.data = data;
 	}
 
 
 	public String getCameraId() {
-		return _data.containsKey(DATA_CAMERA_ID_PROPERTY) ? (String) _data.get(DATA_CAMERA_ID_PROPERTY) : "";
+		return data.containsKey(DATA_CAMERA_ID_PROPERTY) ? (String) data.get(DATA_CAMERA_ID_PROPERTY) : "";
 	}
 
 
 	public int getWidth() {
-		return _data.containsKey(DATA_WIDTH_PROPERTY) ? toInt(_data.get(DATA_WIDTH_PROPERTY)) : -1;
+		return data.containsKey(DATA_WIDTH_PROPERTY) ? toInt(data.get(DATA_WIDTH_PROPERTY)) : -1;
 	}
 
 
 	public int getHeight() {
-		return _data.containsKey(DATA_HEIGHT_PROPERTY) ? toInt(_data.get(DATA_HEIGHT_PROPERTY)) : -1;
+		return data.containsKey(DATA_HEIGHT_PROPERTY) ? toInt(data.get(DATA_HEIGHT_PROPERTY)) : -1;
 	}
 
 
 	public int getFramesToSkip() {
-		return _data.containsKey(DATA_FRAMES_TO_SKIP_PROPERTY) ? toInt(_data.get(DATA_FRAMES_TO_SKIP_PROPERTY)) : 1;
+		return data.containsKey(DATA_FRAMES_TO_SKIP_PROPERTY) ? toInt(data.get(DATA_FRAMES_TO_SKIP_PROPERTY)) : 1;
 	}
 
 
 	public int getRotation() {
-		return _data.containsKey(DATA_ROTATION_PROPERTY) ? toInt(_data.get(DATA_ROTATION_PROPERTY)) : 0;
+		return data.containsKey(DATA_ROTATION_PROPERTY) ? toInt(data.get(DATA_ROTATION_PROPERTY)) : 0;
 	}
 
 
 	public boolean isGrayscale() {
-		return _data.containsKey(DATA_IS_GRAYSCALE_PROPERTY) ? (boolean) _data.get(DATA_IS_GRAYSCALE_PROPERTY) : false;
+		return data.containsKey(DATA_IS_GRAYSCALE_PROPERTY) ? (boolean) data.get(DATA_IS_GRAYSCALE_PROPERTY) : false;
 	}
 
 
 	public Dictionary getRawData() {
-		return _data;
+		return data;
 	}
-	
+
 
 	private int toInt(Object godotInt) {
 		return ((Long) godotInt).intValue();

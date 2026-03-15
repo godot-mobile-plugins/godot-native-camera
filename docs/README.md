@@ -4,8 +4,6 @@
 	<img width="128" height="128" src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/demo/assets/native-camera-ios.png">
 </p>
 
-<br>
-
 <div align="center">
 	<a href="https://github.com/godot-mobile-plugins/godot-native-camera"><img src="https://img.shields.io/github/stars/godot-mobile-plugins/godot-native-camera?label=Stars&style=plastic" height="40"/></a>
 	<img src="https://img.shields.io/github/v/release/godot-mobile-plugins/godot-native-camera?label=Latest%20Release&style=plastic" height="40"/>
@@ -28,8 +26,6 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 * Configurable resolution, rotation, frame skipping, and grayscale capture
 * Designed for real‑time use cases (CV, AR preprocessing, custom rendering)
 
-<br>
-
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Table of Contents
 
 * [Installation](#installation)
@@ -42,8 +38,6 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 * [All Plugins](#all-plugins)
 * [Credits](#credits)
 * [Contributing](#contributing)
-
-<br>
 
 <a name="installation"></a>
 
@@ -83,8 +77,6 @@ Steps:
 * Unzip the archive
 * Copy the contents into your Godot project root
 * Enable the plugin via **Project → Project Settings → Plugins**
-
-<br>
 
 <a name="usage"></a>
 
@@ -134,8 +126,6 @@ func _on_frame_available(frame: FrameInfo) -> void:
 	# Use the image or raw buffer here
 ```
 
-<br>
-
 <a name="signals"></a>
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Signals
@@ -153,8 +143,6 @@ Register listeners on the `NativeCamera` node:
 * `frame_available(frame: FrameInfo)`
 
   * Emitted when a new camera frame is available
-
-<br>
 
 <a name="methods"></a>
 
@@ -184,8 +172,6 @@ Register listeners on the `NativeCamera` node:
 
   * Stops the active camera feed
 
-<br>
-
 <a name="classes"></a>
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="20"> Classes
@@ -202,8 +188,6 @@ Encapsulates camera metadata provided by the mobile OS.
 * `is_front_facing() -> bool`
 * `get_output_sizes() -> Array[FrameSize]`
 
-<br>
-
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FeedRequest
 
 Defines configuration parameters for starting a camera feed.
@@ -218,8 +202,6 @@ Defines configuration parameters for starting a camera feed.
 
 Supports fluent chaining via setter methods.
 
-<br>
-
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FrameInfo
 
 Represents a single captured frame.
@@ -233,8 +215,6 @@ Represents a single captured frame.
 * `is_grayscale() -> bool`
 * `get_image() -> Image`
 
-<br>
-
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/icon.png" width="16"> FrameSize
 
 Represents a supported camera output resolution.
@@ -244,8 +224,6 @@ Represents a supported camera output resolution.
 * `get_width() -> int`
 * `get_height() -> int`
 * `get_raw_data() -> Dictionary`
-
-<br>
 
 <a name="platform-specific-notes"></a>
 
@@ -309,7 +287,7 @@ Helpful resources:
 
 Developed by [Cengiz](https://github.com/cengiz-pz)
 
-Based on [Godot Mobile Plugin Template v4](https://github.com/godot-mobile-plugins/godot-plugin-template/tree/v4)
+Based on [Godot Mobile Plugin Template v5](https://github.com/godot-mobile-plugins/godot-plugin-template/tree/v5)
 
 Original repository: [Godot Native Camera Plugin](https://github.com/godot-mobile-plugins/godot-native-camera)
 
@@ -338,4 +316,3 @@ If this plugin has helped you, consider supporting its development! Every bit of
 
 ## ⭐ Star History
 [![Star History Chart](https://api.star-history.com/svg?repos=godot-mobile-plugins/godot-native-camera&type=Date)](https://star-history.com/#godot-mobile-plugins/godot-native-camera&Date)
-

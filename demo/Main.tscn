@@ -35,6 +35,7 @@ size_flags_vertical = 0
 theme_override_constants/separation = 40
 
 [node name="AndroidTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC" unique_id=116592220]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 texture = ExtResource("2_cm0pq")
@@ -42,6 +43,7 @@ expand_mode = 3
 stretch_mode = 5
 
 [node name="iOSTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/TextureHBC" unique_id=881514197]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 texture = ExtResource("3_fos0i")
@@ -69,14 +71,25 @@ size_flags_horizontal = 8
 size_flags_vertical = 4
 theme_override_constants/separation = 5
 
+[node name="PermissionButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=934268497]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 45)
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Request
+Permission"
+
 [node name="GetButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=2063818801]
-custom_minimum_size = Vector2(150, 60)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 45)
 layout_mode = 2
 size_flags_horizontal = 4
 disabled = true
 text = "Get Cameras"
 
 [node name="CamerasOB" type="OptionButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=978941571]
+unique_name_in_owner = true
 clip_contents = true
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
@@ -84,6 +97,7 @@ autowrap_mode = 1
 fit_to_longest_item = false
 
 [node name="RotationHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=600807468]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC" unique_id=926918957]
@@ -103,6 +117,7 @@ layout_mode = 2
 text = "90"
 
 [node name="FrameSkipHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=349972490]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC" unique_id=263970076]
@@ -122,18 +137,21 @@ layout_mode = 2
 text = "40"
 
 [node name="GrayscaleCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=584678802]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Grayscale"
 
 [node name="StartButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=1684864288]
-custom_minimum_size = Vector2(150, 60)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 45)
 layout_mode = 2
 size_flags_horizontal = 4
 disabled = true
 text = "Start Camera"
 
 [node name="StopButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=739258553]
-custom_minimum_size = Vector2(150, 60)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 45)
 layout_mode = 2
 size_flags_horizontal = 4
 disabled = true
@@ -152,9 +170,11 @@ layout_mode = 2
 text = "Facing: "
 
 [node name="FacingValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer" unique_id=1245667108]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="CameraTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC" unique_id=1249466783]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 250)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -163,6 +183,7 @@ expand_mode = 2
 stretch_mode = 5
 
 [node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/MainContainer/VBoxContainer" unique_id=1857606278]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 210)
 layout_mode = 2
 size_flags_vertical = 3
@@ -173,6 +194,7 @@ scroll_following = true
 script = ExtResource("2_uu6xs")
 metadata/_custom_type_script = "uid://x6uwstlo7n6d"
 
+[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/PermissionButton" to="." method="_on_permission_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/GetButton" to="." method="_on_get_button_pressed"]
 [connection signal="item_selected" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/CamerasOB" to="." method="_on_cameras_ob_item_selected"]
 [connection signal="value_changed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC/RotationHSlider" to="." method="_on_rotation_h_slider_value_changed"]

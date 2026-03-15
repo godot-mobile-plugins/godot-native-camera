@@ -4,14 +4,12 @@
 
 #import "frame_size_wrapper.h"
 
-
 static String const kWidthProperty = "width";
 static String const kHeightProperty = "height";
 
-
 @implementation FrameSizeWrapper
 
-- (instancetype) initWithFrameSize:(FrameSize *)frameSize {
+- (instancetype)initWithFrameSize:(FrameSize *)frameSize {
 	self = [super init];
 	if (self) {
 		_frameSize = frameSize;
@@ -19,11 +17,11 @@ static String const kHeightProperty = "height";
 	return self;
 }
 
-- (Dictionary) buildRawData {
+- (Dictionary)buildRawData {
 	Dictionary dict = Dictionary();
 
-	dict[kWidthProperty] = (int) self.frameSize.width;
-	dict[kHeightProperty] = (int) self.frameSize.height;
+	dict[kWidthProperty] = (int)self.frameSize.width;
+	dict[kHeightProperty] = (int)self.frameSize.height;
 
 	return dict;
 }

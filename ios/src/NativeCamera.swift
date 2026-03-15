@@ -105,7 +105,8 @@ import UIKit
 		}
 	}
 
-	public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+	public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer,
+			from connection: AVCaptureConnection) {
 		frameCounter += 1
 		if frameCounter % (framesToSkip + 1) != 0 { return }
 
@@ -128,7 +129,7 @@ import UIKit
 			let bgraPtr = baseAddress.assumingMemoryBound(to: UInt8.self)
 			for i in 0..<totalPixels {
 				// Simplified: take the Green channel as gray or use proper weights
-				grayBytes[i] = bgraPtr[i * 4 + 1] 
+				grayBytes[i] = bgraPtr[i * 4 + 1]
 			}
 			outputData = Data(grayBytes)
 		} else {
