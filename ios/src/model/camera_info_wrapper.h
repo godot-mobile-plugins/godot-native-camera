@@ -11,18 +11,17 @@
 
 #import "native_camera_plugin-Swift.h"
 
-
 @interface CameraInfoWrapper : NSObject
 
-@property (nonatomic, strong) CameraInfo *cameraInfo;
+@property(nonatomic, strong) CameraInfo *cameraInfo;
 
-- (instancetype) initWithCameraInfo:(CameraInfo *)cameraInfo;
+- (instancetype)initWithCameraInfo:(CameraInfo *)cameraInfo;
 
 /**
  * Builds a Godot-compatible Dictionary containing the camera info
  * @return A Dictionary object with the camera info
  */
-- (Dictionary) buildRawData;
+- (Dictionary)buildRawData;
 
 @end
 

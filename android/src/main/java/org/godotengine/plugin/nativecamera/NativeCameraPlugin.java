@@ -108,9 +108,9 @@ public class NativeCameraPlugin extends GodotPlugin {
 		}
 
 		ActivityCompat.requestPermissions(
-				activity,
-				new String[]{Manifest.permission.CAMERA},
-				CAMERA_PERMISSION_REQUEST
+			activity,
+			new String[]{Manifest.permission.CAMERA},
+			CAMERA_PERMISSION_REQUEST
 		);
 	}
 
@@ -148,7 +148,9 @@ public class NativeCameraPlugin extends GodotPlugin {
 			return;
 		}
 
-		if (running) return;
+		if (running) {
+			return;
+		}
 
 		running = true;
 		startThread();
@@ -231,8 +233,15 @@ public class NativeCameraPlugin extends GodotPlugin {
 			createCameraPreviewSession();
 		}
 
-		@Override public void onDisconnected(CameraDevice cameraDevice) { cameraDevice.close(); }
-		@Override public void onError(CameraDevice cameraDevice, int error) { cameraDevice.close(); }
+		@Override
+		public void onDisconnected(CameraDevice cameraDevice) {
+			cameraDevice.close();
+		}
+
+		@Override
+		public void onError(CameraDevice cameraDevice, int error) {
+			cameraDevice.close();
+		}
 	};
 
 	private void createCameraPreviewSession() {
@@ -242,13 +251,13 @@ public class NativeCameraPlugin extends GodotPlugin {
 				OutputConfiguration outputConfig = new OutputConfiguration(reader.getSurface());
 
 				// Ensure the callback runs on our background thread
-				Executor executor = bgHandler::post; 
+				Executor executor = bgHandler::post;
 
 				SessionConfiguration sessionConfig = new SessionConfiguration(
-						SessionConfiguration.SESSION_REGULAR,
-						Collections.singletonList(outputConfig),
-						executor,
-						sessionCallback
+					SessionConfiguration.SESSION_REGULAR,
+					Collections.singletonList(outputConfig),
+					executor,
+					sessionCallback
 				);
 				camera.createCaptureSession(sessionConfig);
 			} else {// Use the annotation to suppress the warning for the legacy path
@@ -263,9 +272,9 @@ public class NativeCameraPlugin extends GodotPlugin {
 	@SuppressWarnings("deprecation")
 	private void createLegacyCaptureSession() throws CameraAccessException {
 		camera.createCaptureSession(
-				Collections.singletonList(reader.getSurface()),
-				sessionCallback,
-				bgHandler
+			Collections.singletonList(reader.getSurface()),
+			sessionCallback,
+			bgHandler
 		);
 	}
 
@@ -276,25 +285,31 @@ public class NativeCameraPlugin extends GodotPlugin {
 					session = captureSession;
 					try {
 						CaptureRequest.Builder req =
-								camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+							camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
 						req.addTarget(reader.getSurface());
 						req.set(CaptureRequest.CONTROL_AF_MODE,
-								CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+							CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 						session.setRepeatingRequest(req.build(), null, bgHandler);
 					} catch (CameraAccessException e) {
 						e.printStackTrace();
 					}
 				}
 
-				@Override public void onConfigureFailed(CameraCaptureSession session) {}
+				@Override
+				public void onConfigureFailed(CameraCaptureSession session) {
+				}
 			};
 
 	private void onImageAvailable(ImageReader reader) {
-		if (!running) return;
+		if (!running) {
+			return;
+		}
 
 		try {
 			Image image = reader.acquireLatestImage();
-			if (image == null) return;
+			if (image == null) {
+				return;
+			}
 
 			if (!running) {
 				image.close();

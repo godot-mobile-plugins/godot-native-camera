@@ -39,11 +39,7 @@ func is_grayscale() -> bool:
 
 func get_image() -> Image:
 	var img := Image.create_from_data(
-		get_width(),
-		get_height(),
-		false,
-		Image.FORMAT_L8 if is_grayscale() else Image.FORMAT_RGBA8,
-		get_buffer()
+		get_width(), get_height(), false, Image.FORMAT_L8 if is_grayscale() else Image.FORMAT_RGBA8, get_buffer()
 	)
 
 	if is_grayscale:

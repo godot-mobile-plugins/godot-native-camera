@@ -4,7 +4,6 @@
 
 #import "frame_info_wrapper.h"
 
-
 @implementation FrameInfoWrapper
 
 static String const kBufferProperty = "buffer";
@@ -13,7 +12,7 @@ static String const kHeightProperty = "height";
 static String const kRotationProperty = "rotation";
 static String const kIsGrayscaleProperty = "is_grayscale";
 
-- (instancetype) initWithFrameInfo:(FrameInfo *)frameInfo {
+- (instancetype)initWithFrameInfo:(FrameInfo *)frameInfo {
 	self = [super init];
 	if (self) {
 		_frameInfo = frameInfo;
@@ -21,7 +20,7 @@ static String const kIsGrayscaleProperty = "is_grayscale";
 	return self;
 }
 
-- (Dictionary) buildRawData {
+- (Dictionary)buildRawData {
 	Dictionary dict = Dictionary();
 
 	// Convert NSData to Godot's PackedByteArray
@@ -33,10 +32,10 @@ static String const kIsGrayscaleProperty = "is_grayscale";
 
 	dict[kBufferProperty] = godotBuffer;
 
-	dict[kWidthProperty] = (int) self.frameInfo.width;
-	dict[kHeightProperty] = (int) self.frameInfo.height;
-	dict[kRotationProperty] = (int) self.frameInfo.rotation;
-	dict[kIsGrayscaleProperty] = (bool) self.frameInfo.isGrayscale;
+	dict[kWidthProperty] = (int)self.frameInfo.width;
+	dict[kHeightProperty] = (int)self.frameInfo.height;
+	dict[kRotationProperty] = (int)self.frameInfo.rotation;
+	dict[kIsGrayscaleProperty] = (bool)self.frameInfo.isGrayscale;
 
 	return dict;
 }

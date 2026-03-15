@@ -59,7 +59,7 @@ public class FeedRequest {
 	public Dictionary getRawData() {
 		return _data;
 	}
-	
+
 
 	private int toInt(Object godotInt) {
 		return ((Long) godotInt).intValue();

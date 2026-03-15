@@ -11,18 +11,17 @@
 
 #import "native_camera_plugin-Swift.h"
 
-
 @interface FrameSizeWrapper : NSObject
 
-@property (nonatomic, strong) FrameSize *frameSize;
+@property(nonatomic, strong) FrameSize *frameSize;
 
-- (instancetype) initWithFrameSize:(FrameSize *)frameSize;
+- (instancetype)initWithFrameSize:(FrameSize *)frameSize;
 
 /**
  * Builds a Godot-compatible Dictionary containing the frame size data
  * @return A Dictionary object with the frame size
  */
-- (Dictionary) buildRawData;
+- (Dictionary)buildRawData;
 
 @end
 

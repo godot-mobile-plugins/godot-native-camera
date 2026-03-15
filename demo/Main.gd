@@ -5,20 +5,21 @@
 extends Node
 
 @onready var camera_node: NativeCamera = $NativeCamera
-@onready var facing_label: Label = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer/FacingValueLabel
-@onready var camera_texture_rect: TextureRect = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/CameraTextureRect
-@onready var cameras_option_button: OptionButton = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/CamerasOB
-@onready var rotation_slider: HSlider = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC/RotationHSlider
-@onready var rotation_label: Label = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC/ValueLabel
-@onready var grayscale_check_button: CheckButton = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/GrayscaleCB
-@onready var frame_skip_slider: HSlider = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC/SkipHSlider
-@onready var frame_skip_label: Label = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC/ValueLabel
-@onready var get_cameras_button: Button = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/GetButton
-@onready var start_camera_button: Button = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/StartButton
-@onready var stop_camera_button: Button = $CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/StopButton
-@onready var _label: RichTextLabel = $CanvasLayer/MainContainer/VBoxContainer/RichTextLabel as RichTextLabel
-@onready var _android_texture_rect: TextureRect = $CanvasLayer/MainContainer/VBoxContainer/TextureHBC/AndroidTextureRect as TextureRect
-@onready var _ios_texture_rect: TextureRect = $CanvasLayer/MainContainer/VBoxContainer/TextureHBC/iOSTextureRect as TextureRect
+@onready var facing_label: Label = %FacingValueLabel
+@onready var camera_texture_rect: TextureRect = %CameraTextureRect
+@onready var cameras_option_button: OptionButton = %CamerasOB
+@onready var rotation_slider: HSlider = %RotationHBC/RotationHSlider
+@onready var rotation_label: Label = %RotationHBC/ValueLabel
+@onready var grayscale_check_button: CheckButton = %GrayscaleCB
+@onready var frame_skip_slider: HSlider = %FrameSkipHBC/SkipHSlider
+@onready var frame_skip_label: Label = %FrameSkipHBC/ValueLabel
+@onready var request_permission_button := %PermissionButton as Button
+@onready var get_cameras_button := %GetButton as Button
+@onready var start_camera_button := %StartButton as Button
+@onready var stop_camera_button := %StopButton as Button
+@onready var _label := %RichTextLabel as RichTextLabel
+@onready var _android_texture_rect := %AndroidTextureRect as TextureRect
+@onready var _ios_texture_rect := %iOSTextureRect as TextureRect
 
 var _cameras: Dictionary[String, CameraInfo]
 var _camera_texture: ImageTexture = null
@@ -37,7 +38,12 @@ func _ready() -> void:
 	if camera_node.has_camera_permission():
 		get_cameras_button.disabled = false
 	else:
-		camera_node.request_camera_permission()
+		request_permission_button.disabled = false
+
+
+func _on_permission_button_pressed() -> void:
+	request_permission_button.disabled = true
+	camera_node.request_camera_permission()
 
 
 func _on_get_button_pressed() -> void:
@@ -82,12 +88,22 @@ func _on_skip_h_slider_value_changed(value: float) -> void:
 
 func _on_start_button_pressed() -> void:
 	var __camera_id: String = cameras_option_button.get_item_text(cameras_option_button.get_selected_id())
-	camera_node.start(camera_node.create_feed_request()
-		.set_camera_id(__camera_id)
-		.set_frames_to_skip(int(frame_skip_slider.value))
-		.set_rotation(int(rotation_slider.value))
-		.set_grayscale(grayscale_check_button.button_pressed))
-	_print_to_screen("Camera started [id: %s, rot: %.1f, gray?:%s]" % [__camera_id, rotation_slider.value, grayscale_check_button.button_pressed])
+	camera_node.start(
+		(
+			camera_node
+			. create_feed_request()
+			. set_camera_id(__camera_id)
+			. set_frames_to_skip(int(frame_skip_slider.value))
+			. set_rotation(int(rotation_slider.value))
+			. set_grayscale(grayscale_check_button.button_pressed)
+		)
+	)
+	_print_to_screen(
+		(
+			"Camera started [id: %s, rot: %.1f, gray?:%s]"
+			% [__camera_id, rotation_slider.value, grayscale_check_button.button_pressed]
+		)
+	)
 
 
 func _on_stop_button_pressed() -> void:
@@ -115,6 +131,7 @@ func _on_native_camera_camera_permission_granted() -> void:
 
 func _on_native_camera_camera_permission_denied() -> void:
 	_print_to_screen("Camera permission denied")
+	request_permission_button.disabled = false
 
 
 func _update_texture(image: Image) -> void:

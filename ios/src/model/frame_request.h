@@ -9,24 +9,23 @@
 
 #include "core/object/class_db.h"
 
-
 @interface FrameRequest : NSObject
 
-@property (nonatomic, assign) Dictionary rawData;
+@property(nonatomic, assign) Dictionary rawData;
 
-- (instancetype) initWithDictionary:(Dictionary) data;
+- (instancetype)initWithDictionary:(Dictionary)data;
 
-- (NSString*) cameraId;
+- (NSString *)cameraId;
 
-- (NSInteger) width;
+- (NSInteger)width;
 
-- (NSInteger) height;
+- (NSInteger)height;
 
-- (NSInteger) framesToSkip;
+- (NSInteger)framesToSkip;
 
-- (NSInteger) rotation;
+- (NSInteger)rotation;
 
-- (BOOL) isGrayscale;
+- (BOOL)isGrayscale;
 
 @end
 

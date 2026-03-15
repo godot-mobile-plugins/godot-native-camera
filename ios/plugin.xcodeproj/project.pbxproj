@@ -18,7 +18,6 @@
 		07DF21792F3EE0E500E2725C /* native_camera_plugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07DF216B2F3EE0E500E2725C /* native_camera_plugin.mm */; };
 		07DF217A2F3EE0E500E2725C /* NativeCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DF216F2F3EE0E500E2725C /* NativeCamera.swift */; };
 		07DF217B2F3EE0E500E2725C /* FrameSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DF21662F3EE0E500E2725C /* FrameSize.swift */; };
-		94A1B0B2910D06DA0F4D3D3C /* Pods_native_camera_plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 380C444E6383B0C8ACA7CA7D /* Pods_native_camera_plugin.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,7 +63,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94A1B0B2910D06DA0F4D3D3C /* Pods_native_camera_plugin.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,22 +103,12 @@
 			path = src;
 			sourceTree = "<group>";
 		};
-		66EA7AD27171A8F93A267403 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				403D7C7BCFBA671DEF15AE95 /* Pods-native_camera_plugin.debug.xcconfig */,
-				1A3D1E30D9DC57319C20B62B /* Pods-native_camera_plugin.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		90CAAA8B24E71FF10013969F = {
 			isa = PBXGroup;
 			children = (
 				07DF21702F3EE0E500E2725C /* src */,
 				90CAAA9524E71FF10013969F /* Products */,
 				90CAAAA824E72A8A0013969F /* Frameworks */,
-				66EA7AD27171A8F93A267403 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -135,7 +123,6 @@
 		90CAAAA824E72A8A0013969F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				380C444E6383B0C8ACA7CA7D /* Pods_native_camera_plugin.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -176,7 +163,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 90CAAA8F24E71FF10013969F /* Build configuration list for PBXProject "native_camera_plugin" */;
+			buildConfigurationList = 90CAAA8F24E71FF10013969F /* Build configuration list for PBXProject "plugin" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -193,31 +180,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		DD9BF3CC2255FDE9321FE7D1 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-native_camera_plugin-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		90CAAA9024E71FF10013969F /* Sources */ = {
@@ -353,15 +315,10 @@
 		};
 		90CAAA9E24E71FF10013969F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 403D7C7BCFBA671DEF15AE95 /* Pods-native_camera_plugin.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/adformat",
-					"$(SRCROOT)/mediation",
-					"$(SRCROOT)/model",
-				);
+				GODOT_DIR = "$(SRCROOT)/godot";
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -370,7 +327,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/godot/bin",
+					"$(GODOT_DIR)/bin",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
@@ -415,11 +372,11 @@
 					"-DCOREAUDIO_ENABLED",
 					"-DAPPLE_EMBEDDED_ENABLED",
 					"-isystem",
-					"$(SRCROOT)/godot",
+					"$(GODOT_DIR)",
 					"-isystem",
-					"$(SRCROOT)/godot/drivers/apple_embedded",
+					"$(GODOT_DIR)/drivers/apple_embedded",
 					"-isystem",
-					"$(SRCROOT)/godot/platform/ios",
+					"$(GODOT_DIR)/platform/ios",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -433,15 +390,10 @@
 		};
 		90CAAA9F24E71FF10013969F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1A3D1E30D9DC57319C20B62B /* Pods-native_camera_plugin.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/adformat",
-					"$(SRCROOT)/mediation",
-					"$(SRCROOT)/model",
-				);
+				GODOT_DIR = "$(SRCROOT)/godot";
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -450,7 +402,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/godot/bin",
+					"$(GODOT_DIR)/bin",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
@@ -486,11 +438,11 @@
 					"-DCOREAUDIO_ENABLED",
 					"-DAPPLE_EMBEDDED_ENABLED",
 					"-isystem",
-					"$(SRCROOT)/godot",
+					"$(GODOT_DIR)",
 					"-isystem",
-					"$(SRCROOT)/godot/drivers/apple_embedded",
+					"$(GODOT_DIR)/drivers/apple_embedded",
 					"-isystem",
-					"$(SRCROOT)/godot/platform/ios",
+					"$(GODOT_DIR)/platform/ios",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

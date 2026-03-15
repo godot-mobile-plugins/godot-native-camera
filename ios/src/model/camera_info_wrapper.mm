@@ -6,14 +6,13 @@
 
 #import "frame_size_wrapper.h"
 
-
 @implementation CameraInfoWrapper
 
 static String const kCameraIdProperty = "camera_id";
 static String const kIsFrontFacingProperty = "is_front_facing";
 static String const kOutputSizesProperty = "output_sizes";
 
-- (instancetype) initWithCameraInfo:(CameraInfo *)cameraInfo {
+- (instancetype)initWithCameraInfo:(CameraInfo *)cameraInfo {
 	self = [super init];
 	if (self) {
 		_cameraInfo = cameraInfo;
@@ -21,7 +20,7 @@ static String const kOutputSizesProperty = "output_sizes";
 	return self;
 }
 
-- (Dictionary) buildRawData {
+- (Dictionary)buildRawData {
 	Dictionary dict = Dictionary();
 
 	dict[kCameraIdProperty] = [self.cameraInfo.id UTF8String];
@@ -32,7 +31,7 @@ static String const kOutputSizesProperty = "output_sizes";
 	Array dictArray = Array();
 
 	for (FrameSize *frameSize in self.cameraInfo.outputSizes) {
-		FrameSizeWrapper* wrapper = [[FrameSizeWrapper alloc] initWithFrameSize:frameSize];
+		FrameSizeWrapper *wrapper = [[FrameSizeWrapper alloc] initWithFrameSize:frameSize];
 		dictArray.append([wrapper buildRawData]);
 	}
 

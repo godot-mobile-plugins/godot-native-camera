@@ -4,7 +4,6 @@
 
 class_name CameraInfo extends RefCounted
 
-
 const DATA_CAMERA_ID_PROPERTY: String = "camera_id"
 const DATA_IS_FRONT_FACING_PROPERTY: String = "is_front_facing"
 const DATA_OUTPUT_SIZES_PROPERTY: String = "output_sizes"

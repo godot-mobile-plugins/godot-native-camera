@@ -42,8 +42,8 @@ public class CameraInfo {
 		dict.put(DATA_IS_FRONT_FACING_PROPERTY, facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT);
 
 		Size[] sizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-					.getOutputSizes(ImageFormat.YUV_420_888);
-					
+				.getOutputSizes(ImageFormat.YUV_420_888);
+
 		List<Dictionary> dictList = new ArrayList<>();
 		for (Size size : sizes) {
 			dictList.add(new FrameSize(size).buildRawData());

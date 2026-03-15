@@ -4,18 +4,18 @@
 
 #import "native_camera_plugin.h"
 
-#import "native_camera_plugin-Swift.h"
-#import "frame_request.h"
 #import "camera_info_wrapper.h"
 #import "frame_info_wrapper.h"
+#import "frame_request.h"
 #import "native_camera_logger.h"
+#import "native_camera_plugin-Swift.h"
 
 const String CAMERA_PERMISSION_GRANTED_SIGNAL = "camera_permission_granted";
 const String CAMERA_PERMISSION_DENIED_SIGNAL = "camera_permission_denied";
 const String FRAME_AVAILABLE_SIGNAL = "frame_available";
 
-NativeCameraPlugin* NativeCameraPlugin::instance = NULL;
-static NativeCamera* swiftCamera = nil;
+NativeCameraPlugin *NativeCameraPlugin::instance = NULL;
+static NativeCamera *swiftCamera = nil;
 
 void NativeCameraPlugin::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("has_camera_permission"), &NativeCameraPlugin::has_camera_permission);
@@ -38,11 +38,11 @@ void NativeCameraPlugin::request_camera_permission() {
 }
 
 Array NativeCameraPlugin::get_all_cameras() {
-	NSArray<CameraInfo*> *cameras = [swiftCamera getCameras];
+	NSArray<CameraInfo *> *cameras = [swiftCamera getCameras];
 	Array godotArray;
 
 	for (CameraInfo *cam in cameras) {
-		CameraInfoWrapper* wrapper = [[CameraInfoWrapper alloc] initWithCameraInfo:cam];
+		CameraInfoWrapper *wrapper = [[CameraInfoWrapper alloc] initWithCameraInfo:cam];
 		godotArray.append([wrapper buildRawData]);
 	}
 	return godotArray;
@@ -50,12 +50,12 @@ Array NativeCameraPlugin::get_all_cameras() {
 
 void NativeCameraPlugin::start(Dictionary requestDict) {
 	FrameRequest *req = [[FrameRequest alloc] initWithDictionary:requestDict];
-	[swiftCamera startWithCameraId:req.cameraId 
-							width:req.width 
-							height:req.height 
-							skip:req.framesToSkip 
-							rot:req.rotation 
-							gray:req.isGrayscale];
+	[swiftCamera startWithCameraId:req.cameraId
+							 width:req.width
+							height:req.height
+							  skip:req.framesToSkip
+							   rot:req.rotation
+							  gray:req.isGrayscale];
 }
 
 void NativeCameraPlugin::stop() {
@@ -71,7 +71,7 @@ NativeCameraPlugin::NativeCameraPlugin() {
 
 		// Setup Swift callbacks
 		swiftCamera.onFrameAvailable = ^(FrameInfo *info) {
-			FrameInfoWrapper* wrapper = [[FrameInfoWrapper alloc] initWithFrameInfo:info];
+			FrameInfoWrapper *wrapper = [[FrameInfoWrapper alloc] initWithFrameInfo:info];
 			instance->emit_signal(FRAME_AVAILABLE_SIGNAL, [wrapper buildRawData]);
 		};
 
