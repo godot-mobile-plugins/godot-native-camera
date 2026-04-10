@@ -234,6 +234,7 @@ Represents a supported camera output resolution.
 * Ensure Android export templates are installed
 * Enable Gradle build in export settings
 * Camera permission is required at runtime
+* The **"Two-Strike" Rule**: Starting in Android 11, if a user taps "Deny" for a specific permission more than once during the app's lifetime on the device, the system will no longer show the dialog for future requests. Once this two-strike threshold is reached, any subsequent calls to request the permission will immediately be denied without showing any dialogs.
 
 **Troubleshooting:**
 
