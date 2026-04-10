@@ -37,16 +37,23 @@ public class CameraInfo {
 		dict.put(DATA_CAMERA_ID_PROPERTY, cameraId);
 
 		Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-		// Default to BACK if null, otherwise check if FRONT
-		dict.put(DATA_IS_FRONT_FACING_PROPERTY, facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT);
+		dict.put(DATA_IS_FRONT_FACING_PROPERTY,
+				facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT);
 
-		Size[] sizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-				.getOutputSizes(ImageFormat.YUV_420_888);
+		android.hardware.camera2.params.StreamConfigurationMap map =
+				characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
 		List<Dictionary> dictList = new ArrayList<>();
-		for (Size size : sizes) {
-			dictList.add(new FrameSize(size).buildRawData());
+
+		if (map != null) {
+			Size[] sizes = map.getOutputSizes(ImageFormat.YUV_420_888);
+			if (sizes != null) {
+				for (Size size : sizes) {
+					dictList.add(new FrameSize(size).buildRawData());
+				}
+			}
 		}
+
 		dict.put(DATA_OUTPUT_SIZES_PROPERTY, dictList.toArray());
 
 		return dict;

@@ -125,9 +125,16 @@ public class NativeCameraPlugin extends GodotPlugin {
 		}
 
 		CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+
 		try {
-			for (String cameraId : manager.getCameraIdList()) {
-				resultList.add(new CameraInfo(cameraId, manager.getCameraCharacteristics(cameraId)).buildRawData());
+			String[] cameraIds = manager.getCameraIdList();
+			for (String cameraId : cameraIds) {
+				try {
+					CameraInfo cameraInfo = new CameraInfo(cameraId, manager.getCameraCharacteristics(cameraId));
+					resultList.add(cameraInfo.buildRawData());
+				} catch (Exception e) {
+					Log.w(LOG_TAG, "get_all_cameras(): Skipping camera " + cameraId, e);
+				}
 			}
 		} catch (CameraAccessException | SecurityException e) {
 			Log.e(LOG_TAG, "get_all_cameras(): Failed to generate camera list", e);
