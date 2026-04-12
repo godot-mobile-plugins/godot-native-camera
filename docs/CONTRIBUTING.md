@@ -522,7 +522,7 @@ The iOS build process involves several steps:
 - **Build artifacts:** `ios/build/`
 - **Frameworks:** `ios/build/framework/`
 - **Archives:** `ios/build/lib/*.xcarchive`
-- **Release archive:** `ios/build/release/NativeCameraPlugin-iOS-v*.zip`
+- **Release archive:** `release/NativeCameraPlugin-iOS-v*.zip`
 
 ---
 
