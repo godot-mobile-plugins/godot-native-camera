@@ -24,7 +24,7 @@ val localProperties =
 val configProperties =
     java.util.Properties().also { props ->
         rootDir
-            .resolve("config.properties")
+            .resolve("config/config.properties")
             .takeIf { it.exists() }
             ?.inputStream()
             ?.use { props.load(it) }
