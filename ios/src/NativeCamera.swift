@@ -2,8 +2,8 @@
 // © 2026-present https://github.com/cengiz-pz
 //
 
-import Foundation
 import AVFoundation
+import Foundation
 import UIKit
 
 @objc public class NativeCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -160,7 +160,7 @@ import UIKit
 		}
 	}
 
-	private func rotateData(_ src: Data, w: Int, h: Int, degrees: Int, gray: Bool) -> (data: Data, w: Int, h: Int) {
+	internal func rotateData(_ src: Data, w: Int, h: Int, degrees: Int, gray: Bool) -> (data: Data, w: Int, h: Int) {
 		let normalizedDegrees = ((degrees % 360) + 360) % 360
 		if normalizedDegrees == 0 { return (src, w, h) }
 

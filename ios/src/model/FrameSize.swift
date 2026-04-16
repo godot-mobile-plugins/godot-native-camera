@@ -8,6 +8,7 @@ import Foundation
 	@objc let width: Int
 	@objc let height: Int
 
+	@objc(initWithWidth:height:)
 	init(width: Int, height: Int) {
 		self.width = width
 		self.height = height

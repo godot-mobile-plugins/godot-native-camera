@@ -11,6 +11,7 @@ import Foundation
 	@objc let rotation: Int
 	@objc let isGrayscale: Bool
 
+	@objc(initWithBuffer:width:height:rotation:isGrayscale:)
 	init(buffer: Data, width: Int, height: Int, rotation: Int, isGrayscale: Bool) {
 		self.buffer = buffer
 		self.width = width
