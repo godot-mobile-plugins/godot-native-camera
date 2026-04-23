@@ -3,7 +3,7 @@
 //
 
 // Compiles all convention plugins (precompiled script plugins) in
-// src/main/kotlin/*.gradle.kts and makes them - together with their
+// src/main/java/*.gradle.kts and makes them - together with their
 // runtime dependencies - available to every subproject that applies them.
 //
 // Versions are kept in sync with gradle/libs.versions.toml via the
@@ -25,4 +25,13 @@ sourceSets {
     main {
         java.srcDirs("src/main/kotlin")
     }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    targetCompatibility = "17"
+    sourceCompatibility = "17"
 }

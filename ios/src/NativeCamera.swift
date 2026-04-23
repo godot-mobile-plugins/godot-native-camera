@@ -61,16 +61,23 @@ import UIKit
 	}
 
 	@objc public func start(cameraId: String, width: Int, height: Int, skip: Int, rot: Int, gray: Bool) {
-		stop() // Ensure clean start
-
-		self.targetWidth = width
-		self.targetHeight = height
-		self.framesToSkip = skip
-		self.rotation = rot
-		self.isGrayscale = gray
-		self.frameCounter = 0
-
+		// Dispatch everything onto sessionQueue so stop() fully completes
+		// before we reconfigure, AND so variable writes are on the same
+		// queue that captureOutput reads them from — no data race.
 		sessionQueue.async {
+			self.captureSession?.stopRunning()
+			self.captureSession = nil
+			self.videoOutput = nil
+
+			// Set instance vars inside sessionQueue, so captureOutput
+			// (also on sessionQueue) always sees a consistent, written value.
+			self.targetWidth = width
+			self.targetHeight = height
+			self.framesToSkip = skip
+			self.rotation = rot
+			self.isGrayscale = gray
+			self.frameCounter = 0
+
 			let session = AVCaptureSession()
 			session.beginConfiguration()
 
@@ -80,7 +87,6 @@ import UIKit
 			if session.canAddInput(input) { session.addInput(input) }
 
 			let output = AVCaptureVideoDataOutput()
-			// We request BGRA for color or Y (Luma) for grayscale via the delegate
 			output.videoSettings = [
 				kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
 			]

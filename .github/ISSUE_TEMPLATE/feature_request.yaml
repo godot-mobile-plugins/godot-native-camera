@@ -40,10 +40,10 @@ body:
     label: Plugin Version
     description: What version of the plugin are you running?
     options:
-      - "1.0"
       - "1.1"
+      - "1.0"
       - Other
-    default: 1
+    default: 0
   validations:
     required: true
 - type: textarea

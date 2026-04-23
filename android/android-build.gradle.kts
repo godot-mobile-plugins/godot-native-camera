@@ -336,12 +336,31 @@ val testRuntimeOnlyDependencies =
             .map { findLibrary(it).get().get() }
     }
 
+val artifactType = Attribute.of("artifactType", String::class.java)
+
 dependencies {
     "rewrite"(libs.rewrite.static.analysis)
     implementation("godot:godot-lib:${godotConfig.godotVersion}.${godotConfig.godotReleaseType}@aar")
     androidDependencies.forEach { implementation(it) }
     testDependencies.forEach { testImplementation(it) }
     testRuntimeOnlyDependencies.forEach { testRuntimeOnly(it) }
+
+    attributesSchema {
+        attribute(artifactType) {
+            disambiguationRules.add(JarFirstRule::class.java)
+        }
+    }
+}
+
+// Helper class to prioritize JARs when multiple variants match
+abstract class JarFirstRule : AttributeDisambiguationRule<String> {
+    override fun execute(details: MultipleCandidatesDetails<String>) {
+        if (details.candidateValues.contains("jar")) {
+            details.closestMatch("jar")
+        } else if (details.candidateValues.contains("android-classes-jar")) {
+            details.closestMatch("android-classes-jar")
+        }
+    }
 }
 
 // -- Helpers -------------------------------------------------------------------
