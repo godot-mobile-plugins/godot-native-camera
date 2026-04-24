@@ -69,7 +69,7 @@ theme_override_constants/separation = 5
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
-theme_override_constants/separation = 5
+theme_override_constants/separation = 2
 
 [node name="PermissionButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=934268497]
 unique_name_in_owner = true
@@ -141,21 +141,15 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Grayscale"
 
-[node name="StartButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=1684864288]
+[node name="HorizontalMirrorCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=211048917]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 45)
 layout_mode = 2
-size_flags_horizontal = 4
-disabled = true
-text = "Start Camera"
+text = "H Mirror"
 
-[node name="StopButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=739258553]
+[node name="VerticalMirrorCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=874687711]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 45)
 layout_mode = 2
-size_flags_horizontal = 4
-disabled = true
-text = "Stop Camera"
+text = "V Mirror"
 
 [node name="CameraVBC" type="VBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC" unique_id=675719712]
 layout_mode = 2
@@ -172,6 +166,27 @@ text = "Facing: "
 [node name="FacingValueLabel" type="Label" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/HBoxContainer" unique_id=1245667108]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="CameraButtonsHBC" type="HBoxContainer" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC" unique_id=118792028]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="StartButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/CameraButtonsHBC" unique_id=1684864288]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 45)
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Start"
+
+[node name="StopButton" type="Button" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/CameraButtonsHBC" unique_id=739258553]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 45)
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Stop"
 
 [node name="CameraTextureRect" type="TextureRect" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC" unique_id=1249466783]
 unique_name_in_owner = true
@@ -199,8 +214,8 @@ metadata/_custom_type_script = "uid://x6uwstlo7n6d"
 [connection signal="item_selected" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/CamerasOB" to="." method="_on_cameras_ob_item_selected"]
 [connection signal="value_changed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/RotationHBC/RotationHSlider" to="." method="_on_rotation_h_slider_value_changed"]
 [connection signal="value_changed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/FrameSkipHBC/SkipHSlider" to="." method="_on_skip_h_slider_value_changed"]
-[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC/StopButton" to="." method="_on_stop_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/CameraButtonsHBC/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/CameraVBC/CameraButtonsHBC/StopButton" to="." method="_on_stop_button_pressed"]
 [connection signal="camera_permission_denied" from="NativeCamera" to="." method="_on_native_camera_camera_permission_denied"]
 [connection signal="camera_permission_granted" from="NativeCamera" to="." method="_on_native_camera_camera_permission_granted"]
 [connection signal="frame_available" from="NativeCamera" to="." method="_on_native_camera_frame_available"]

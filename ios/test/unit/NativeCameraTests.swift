@@ -214,7 +214,157 @@ final class NativeCameraRotationTests: XCTestCase {
 	}
 }
 
-// MARK: - NativeCamera Permission Tests
+// MARK: - NativeCamera Mirror Tests
+
+/// Tests NativeCamera.mirrorData(_:w:h:gray:horizontal:vertical:) in isolation.
+///
+/// The method is `internal`, so it is accessible within the test module
+/// via `@testable import NativeCameraPlugin`.
+final class NativeCameraMirrorTests: XCTestCase {
+
+	private let camera = NativeCamera()
+
+	// MARK: Identity
+
+	func test_mirror_neitherAxis_returnsUnchangedData() {
+		let result = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2,
+				gray: true, horizontal: false, vertical: false)
+		XCTAssertEqual(result.data, PixelBufferFixture.gray2x2)
+		XCTAssertEqual(result.w, 2)
+		XCTAssertEqual(result.h, 2)
+	}
+
+	// MARK: Grayscale – horizontal
+
+	func test_mirror_gray_horizontal_pixelOrder() {
+		// 2×2 layout row-major: [A B / C D] → horizontal → [B A / D C]
+		let src  = Data([1, 2, 3, 4])
+		let want = Data([2, 1, 4, 3])
+		let result = camera.mirrorData(src, w: 2, h: 2, gray: true, horizontal: true, vertical: false)
+		XCTAssertEqual([UInt8](result.data), [UInt8](want))
+	}
+
+	func test_mirror_gray_horizontal_nonSquare_pixelOrder() {
+		// 3×2: [1 2 3 / 4 5 6] → horizontal → [3 2 1 / 6 5 4]
+		let src  = Data([1, 2, 3, 4, 5, 6])
+		let want = Data([3, 2, 1, 6, 5, 4])
+		let result = camera.mirrorData(src, w: 3, h: 2, gray: true, horizontal: true, vertical: false)
+		XCTAssertEqual([UInt8](result.data), [UInt8](want))
+	}
+
+	// MARK: Grayscale – vertical
+
+	func test_mirror_gray_vertical_pixelOrder() {
+		// 2×2: [A B / C D] → vertical → [C D / A B]
+		let src  = Data([1, 2, 3, 4])
+		let want = Data([3, 4, 1, 2])
+		let result = camera.mirrorData(src, w: 2, h: 2, gray: true, horizontal: false, vertical: true)
+		XCTAssertEqual([UInt8](result.data), [UInt8](want))
+	}
+
+	func test_mirror_gray_vertical_nonSquare_pixelOrder() {
+		// 3×2: [1 2 3 / 4 5 6] → vertical → [4 5 6 / 1 2 3]
+		let src  = Data([1, 2, 3, 4, 5, 6])
+		let want = Data([4, 5, 6, 1, 2, 3])
+		let result = camera.mirrorData(src, w: 3, h: 2, gray: true, horizontal: false, vertical: true)
+		XCTAssertEqual([UInt8](result.data), [UInt8](want))
+	}
+
+	// MARK: Grayscale – both axes == 180° rotation
+
+	func test_mirror_gray_both_equalsRotate180() {
+		let src      = PixelBufferFixture.gray2x2
+		let mirrored = camera.mirrorData(src, w: 2, h: 2, gray: true, horizontal: true, vertical: true)
+		let rotated  = camera.rotateData(src, w: 2, h: 2, degrees: 180, gray: true)
+		XCTAssertEqual([UInt8](mirrored.data), [UInt8](rotated.data),
+				"mirror both axes should equal 180° rotation")
+	}
+
+	// MARK: Dimensions unchanged
+
+	func test_mirror_gray_preservesDimensions_allAxes() {
+		let buf = PixelBufferFixture.gray(width: 4, height: 3)
+		for (h, v) in [(true, false), (false, true), (true, true)] {
+			let r = camera.mirrorData(buf, w: 4, h: 3, gray: true, horizontal: h, vertical: v)
+			XCTAssertEqual(r.w, 4, "width changed for h:\(h) v:\(v)")
+			XCTAssertEqual(r.h, 3, "height changed for h:\(h) v:\(v)")
+		}
+	}
+
+	// MARK: Round-trip
+
+	func test_mirror_gray_horizontal_twice_equalsIdentity() {
+		let src   = PixelBufferFixture.gray2x2
+		let once  = camera.mirrorData(src, w: 2, h: 2, gray: true, horizontal: true, vertical: false)
+		let twice = camera.mirrorData(once.data, w: 2, h: 2, gray: true, horizontal: true, vertical: false)
+		XCTAssertEqual([UInt8](twice.data), [UInt8](src))
+	}
+
+	func test_mirror_gray_vertical_twice_equalsIdentity() {
+		let src   = PixelBufferFixture.gray2x2
+		let once  = camera.mirrorData(src, w: 2, h: 2, gray: true, horizontal: false, vertical: true)
+		let twice = camera.mirrorData(once.data, w: 2, h: 2, gray: true, horizontal: false, vertical: true)
+		XCTAssertEqual([UInt8](twice.data), [UInt8](src))
+	}
+
+	// MARK: RGBA – horizontal
+
+	func test_mirror_rgba_horizontal_pixelOrder() {
+		// 2×2 RGBA: pixels [P0 P1 / P2 P3], horizontal → [P1 P0 / P3 P2]
+		// Build a simple source with distinct per-pixel R values (G=B=0, A=255).
+		let src = Data([
+			10, 0, 0, 255, 20, 0, 0, 255,   // row 0: P0, P1
+			30, 0, 0, 255, 40, 0, 0, 255   // row 1: P2, P3
+		])
+		let want = Data([
+			20, 0, 0, 255, 10, 0, 0, 255,   // row 0: P1, P0
+			40, 0, 0, 255, 30, 0, 0, 255   // row 1: P3, P2
+		])
+		let result = camera.mirrorData(src, w: 2, h: 2, gray: false, horizontal: true, vertical: false)
+		XCTAssertEqual([UInt8](result.data), [UInt8](want))
+	}
+
+	func test_mirror_rgba_vertical_pixelOrder() {
+		// 2×2 RGBA: pixels [P0 P1 / P2 P3], vertical → [P2 P3 / P0 P1]
+		let src = Data([
+			10, 0, 0, 255, 20, 0, 0, 255,   // row 0: P0, P1
+			30, 0, 0, 255, 40, 0, 0, 255   // row 1: P2, P3
+		])
+		let want = Data([
+			30, 0, 0, 255, 40, 0, 0, 255,   // row 0: P2, P3
+			10, 0, 0, 255, 20, 0, 0, 255   // row 1: P0, P1
+		])
+		let result = camera.mirrorData(src, w: 2, h: 2, gray: false, horizontal: false, vertical: true)
+		XCTAssertEqual([UInt8](result.data), [UInt8](want))
+	}
+
+	func test_mirror_rgba_horizontal_preservesAlpha() {
+		let result = camera.mirrorData(PixelBufferFixture.rgba2x2, w: 2, h: 2,
+				gray: false, horizontal: true, vertical: false)
+		let bytes = [UInt8](result.data)
+		for i in stride(from: 3, to: bytes.count, by: 4) {
+			XCTAssertEqual(bytes[i], 255, "Alpha channel corrupted at pixel \(i/4)")
+		}
+	}
+
+	func test_mirror_rgba_bufferLength_unchanged() {
+		let src = PixelBufferFixture.rgba(width: 6, height: 4)
+		for (h, v) in [(true, false), (false, true), (true, true)] {
+			let r = camera.mirrorData(src, w: 6, h: 4, gray: false, horizontal: h, vertical: v)
+			XCTAssertEqual(r.data.count, src.count,
+					"Buffer length changed for h:\(h) v:\(v)")
+		}
+	}
+
+	// MARK: Round-trip RGBA
+
+	func test_mirror_rgba_horizontal_twice_equalsIdentity() {
+		let src   = PixelBufferFixture.rgba2x2
+		let once  = camera.mirrorData(src, w: 2, h: 2, gray: false, horizontal: true, vertical: false)
+		let twice = camera.mirrorData(once.data, w: 2, h: 2, gray: false, horizontal: true, vertical: false)
+		XCTAssertEqual([UInt8](twice.data), [UInt8](src))
+	}
+}
 
 final class NativeCameraPermissionTests: XCTestCase {
 

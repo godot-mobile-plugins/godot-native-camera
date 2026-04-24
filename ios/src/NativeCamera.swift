@@ -29,6 +29,8 @@ import UIKit
 	private var frameCounter: Int = 0
 	private var rotation: Int = 0
 	private var isGrayscale: Bool = false
+	private var mirrorHorizontal: Bool = false
+	private var mirrorVertical: Bool = false
 	private var targetWidth: Int = 0
 	private var targetHeight: Int = 0
 
@@ -60,7 +62,8 @@ import UIKit
 		}
 	}
 
-	@objc public func start(cameraId: String, width: Int, height: Int, skip: Int, rot: Int, gray: Bool) {
+	@objc public func start(cameraId: String, width: Int, height: Int, skip: Int, rot: Int, gray: Bool,
+			mirrorHorizontal: Bool, mirrorVertical: Bool) {
 		// Dispatch everything onto sessionQueue so stop() fully completes
 		// before we reconfigure, AND so variable writes are on the same
 		// queue that captureOutput reads them from — no data race.
@@ -76,6 +79,8 @@ import UIKit
 			self.framesToSkip = skip
 			self.rotation = rot
 			self.isGrayscale = gray
+			self.mirrorHorizontal = mirrorHorizontal
+			self.mirrorVertical = mirrorVertical
 			self.frameCounter = 0
 
 			let session = AVCaptureSession()
@@ -154,11 +159,15 @@ import UIKit
 		// Handle Rotation
 		let rotated = rotateData(outputData, w: width, h: height, degrees: rotation, gray: isGrayscale)
 
+		// Handle Mirror (applied after rotation, same as Android)
+		let final = mirrorData(rotated.data, w: rotated.w, h: rotated.h,
+				gray: isGrayscale, horizontal: mirrorHorizontal, vertical: mirrorVertical)
+
 		DispatchQueue.main.async {
 			let info = FrameInfo(
-				buffer: rotated.data,
-				width: rotated.w,
-				height: rotated.h,
+				buffer: final.data,
+				width: final.w,
+				height: final.h,
 				rotation: self.rotation,
 				isGrayscale: self.isGrayscale
 			)
@@ -201,5 +210,29 @@ import UIKit
 			}
 		}
 		return (Data(dst), newW, newH)
+	}
+
+	/// Flips a pixel buffer horizontally, vertically, or both.
+	/// Dimensions are preserved — only pixel positions are rearranged.
+	/// Applied after rotation, matching Android post-processing order.
+	internal func mirrorData(_ src: Data, w: Int, h: Int, gray: Bool,
+			horizontal: Bool, vertical: Bool) -> (data: Data, w: Int, h: Int) {
+		guard horizontal || vertical else { return (src, w, h) }
+		let bytesPerPixel = gray ? 1 : 4
+		var dst = [UInt8](repeating: 0, count: src.count)
+		let srcArray = [UInt8](src)
+
+		for y in 0..<h {
+			let dy = vertical ? (h - 1 - y) : y
+			for x in 0..<w {
+				let dx = horizontal ? (w - 1 - x) : x
+				let srcIdx = (y * w + x) * bytesPerPixel
+				let dstIdx = (dy * w + dx) * bytesPerPixel
+				for i in 0..<bytesPerPixel {
+					dst[dstIdx + i] = srcArray[srcIdx + i]
+				}
+			}
+		}
+		return (Data(dst), w, h)
 	}
 }

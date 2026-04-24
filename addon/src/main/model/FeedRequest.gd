@@ -10,6 +10,8 @@ const DATA_HEIGHT_PROPERTY := &"height"
 const DATA_FRAMES_TO_SKIP_PROPERTY := &"frames_to_skip"
 const DATA_ROTATION_PROPERTY := &"rotation"
 const DATA_IS_GRAYSCALE_PROPERTY := &"is_grayscale"
+const DATA_MIRROR_HORIZONTAL_PROPERTY := &"mirror_horizontal"
+const DATA_MIRROR_VERTICAL_PROPERTY := &"mirror_vertical"
 
 const DEFAULT_WIDTH: int = 1280
 const DEFAULT_HEIGHT: int = 720
@@ -21,7 +23,9 @@ const DEFAULT_DATA: Dictionary = {
 	DATA_HEIGHT_PROPERTY: DEFAULT_HEIGHT,
 	DATA_FRAMES_TO_SKIP_PROPERTY: DEFAULT_FRAMES_TO_SKIP,
 	DATA_ROTATION_PROPERTY: DEFAULT_ROTATION,
-	DATA_IS_GRAYSCALE_PROPERTY: false
+	DATA_IS_GRAYSCALE_PROPERTY: false,
+	DATA_MIRROR_HORIZONTAL_PROPERTY: false,
+	DATA_MIRROR_VERTICAL_PROPERTY: false
 }
 
 var _data: Dictionary
@@ -58,6 +62,16 @@ func set_rotation(a_value: int) -> FeedRequest:
 
 func set_grayscale(a_value: bool) -> FeedRequest:
 	_data[DATA_IS_GRAYSCALE_PROPERTY] = a_value
+	return self
+
+
+func set_mirror_horizontal(a_value: bool) -> FeedRequest:
+	_data[DATA_MIRROR_HORIZONTAL_PROPERTY] = a_value
+	return self
+
+
+func set_mirror_vertical(a_value: bool) -> FeedRequest:
+	_data[DATA_MIRROR_VERTICAL_PROPERTY] = a_value
 	return self
 
 

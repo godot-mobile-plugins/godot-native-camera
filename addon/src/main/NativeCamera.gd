@@ -28,6 +28,12 @@ const PLUGIN_SINGLETON_NAME: String = "@pluginName@"
 ## Whether the emitted frames should be grayscale or colored.
 @export var is_grayscale: bool = false
 
+## Whether the emitted frames should be flipped horizontally (left-right mirror).
+@export var mirror_horizontal: bool = false
+
+## Whether the emitted frames should be flipped vertically (top-bottom mirror).
+@export var mirror_vertical: bool = false
+
 var _plugin_singleton: Object
 
 
@@ -96,6 +102,8 @@ func create_feed_request() -> FeedRequest:
 		. set_frames_to_skip(frames_to_skip)
 		. set_rotation(frame_rotation)
 		. set_grayscale(is_grayscale)
+		. set_mirror_horizontal(mirror_horizontal)
+		. set_mirror_vertical(mirror_vertical)
 	)
 
 

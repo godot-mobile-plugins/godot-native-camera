@@ -65,6 +65,8 @@ public class NativeCameraPlugin extends GodotPlugin {
 	private volatile int framesToSkipDivisor;
 	private volatile int rotation;
 	private volatile boolean isGrayscale;
+	private volatile boolean mirrorHorizontal;
+	private volatile boolean mirrorVertical;
 	private int frameCounter = 0;
 
 	private volatile boolean running = false;
@@ -164,6 +166,8 @@ public class NativeCameraPlugin extends GodotPlugin {
 		framesToSkipDivisor = feedRequest.getFramesToSkip() + 1;
 		rotation = feedRequest.getRotation(); // degrees
 		isGrayscale = feedRequest.isGrayscale();
+		mirrorHorizontal = feedRequest.isMirrorHorizontal();
+		mirrorVertical = feedRequest.isMirrorVertical();
 		openCamera(feedRequest);
 	}
 
@@ -413,6 +417,14 @@ public class NativeCameraPlugin extends GodotPlugin {
 				height = result.height;
 			}
 
+			if (mirrorHorizontal || mirrorVertical) {
+				if (isGrayscale) {
+					output = mirrorGray(output, width, height, mirrorHorizontal, mirrorVertical);
+				} else {
+					output = mirrorRGBA(output, width, height, mirrorHorizontal, mirrorVertical);
+				}
+			}
+
 			if (running) {
 				emitFrame(output, width, height, rotation, isGrayscale);
 			}
@@ -559,5 +571,44 @@ public class NativeCameraPlugin extends GodotPlugin {
 		}
 
 		return new RotationResult(dst, newWidth, newHeight);
+	}
+
+	/**
+	 * Mirrors an RGBA (4 bytes/pixel) frame buffer horizontally, vertically, or both.
+	 * Dimensions are unchanged; only pixel positions are swapped.
+	 */
+	private static byte[] mirrorRGBA(byte[] src, int width, int height,
+									boolean horizontal, boolean vertical) {
+		byte[] dst = new byte[src.length];
+		for (int y = 0; y < height; y++) {
+			int dy = vertical ? (height - 1 - y) : y;
+			for (int x = 0; x < width; x++) {
+				int dx = horizontal ? (width - 1 - x) : x;
+				int srcIdx = (y * width + x) * 4;
+				int dstIdx = (dy * width + dx) * 4;
+				dst[dstIdx] = src[srcIdx];
+				dst[dstIdx + 1] = src[srcIdx + 1];
+				dst[dstIdx + 2] = src[srcIdx + 2];
+				dst[dstIdx + 3] = src[srcIdx + 3];
+			}
+		}
+		return dst;
+	}
+
+	/**
+	 * Mirrors a grayscale (1 byte/pixel) frame buffer horizontally, vertically, or both.
+	 * Dimensions are unchanged; only pixel positions are swapped.
+	 */
+	private static byte[] mirrorGray(byte[] src, int width, int height,
+									boolean horizontal, boolean vertical) {
+		byte[] dst = new byte[src.length];
+		for (int y = 0; y < height; y++) {
+			int dy = vertical ? (height - 1 - y) : y;
+			for (int x = 0; x < width; x++) {
+				int dx = horizontal ? (width - 1 - x) : x;
+				dst[dy * width + dx] = src[y * width + x];
+			}
+		}
+		return dst;
 	}
 }

@@ -12,6 +12,8 @@ static String const kHeightProperty = "height";
 static String const kFramesToSkipProperty = "frames_to_skip";
 static String const kRotationProperty = "rotation";
 static String const kIsGrayscaleProperty = "is_grayscale";
+static String const kMirrorHorizontalProperty = "mirror_horizontal";
+static String const kMirrorVerticalProperty = "mirror_vertical";
 
 - (instancetype)initWithDictionary:(Dictionary)data {
 	if ((self = [super init])) {
@@ -45,6 +47,14 @@ static String const kIsGrayscaleProperty = "is_grayscale";
 
 - (BOOL)isGrayscale {
 	return self.rawData.has(kIsGrayscaleProperty) ? (BOOL)self.rawData[kIsGrayscaleProperty] : NO;
+}
+
+- (BOOL)isMirrorHorizontal {
+	return self.rawData.has(kMirrorHorizontalProperty) ? (BOOL)self.rawData[kMirrorHorizontalProperty] : NO;
+}
+
+- (BOOL)isMirrorVertical {
+	return self.rawData.has(kMirrorVerticalProperty) ? (BOOL)self.rawData[kMirrorVerticalProperty] : NO;
 }
 
 @end

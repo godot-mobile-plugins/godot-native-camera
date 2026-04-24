@@ -147,6 +147,81 @@ public class FeedRequestTest {
 		assertSame(dict, req.getRawData());
 	}
 
+	// ── mirrorHorizontal ──────────────────────────────────────────────────
+
+	@Test
+	public void isMirrorHorizontal_falseInFullDict() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.fullDict());
+		assertFalse(req.isMirrorHorizontal());
+	}
+
+	@Test
+	public void isMirrorHorizontal_trueInMirrorHorizontalDict() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.mirrorHorizontalDict());
+		assertTrue(req.isMirrorHorizontal());
+	}
+
+	@Test
+	public void isMirrorHorizontal_missingKey_defaultsFalse() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.emptyDict());
+		assertFalse(req.isMirrorHorizontal());
+	}
+
+	@Test
+	public void isMirrorHorizontal_minimalDict_defaultsFalse() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.minimalDict());
+		assertFalse(req.isMirrorHorizontal());
+	}
+
+	// ── mirrorVertical ────────────────────────────────────────────────────
+
+	@Test
+	public void isMirrorVertical_falseInFullDict() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.fullDict());
+		assertFalse(req.isMirrorVertical());
+	}
+
+	@Test
+	public void isMirrorVertical_trueInMirrorVerticalDict() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.mirrorVerticalDict());
+		assertTrue(req.isMirrorVertical());
+	}
+
+	@Test
+	public void isMirrorVertical_missingKey_defaultsFalse() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.emptyDict());
+		assertFalse(req.isMirrorVertical());
+	}
+
+	@Test
+	public void isMirrorVertical_minimalDict_defaultsFalse() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.minimalDict());
+		assertFalse(req.isMirrorVertical());
+	}
+
+	// ── mirror combined ───────────────────────────────────────────────────
+
+	@Test
+	public void mirrorBothDict_bothFlagsTrue() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.mirrorBothDict());
+		assertTrue(req.isMirrorHorizontal());
+		assertTrue(req.isMirrorVertical());
+	}
+
+	@Test
+	public void mirrorHorizontalDict_onlyHorizontalTrue() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.mirrorHorizontalDict());
+		assertTrue(req.isMirrorHorizontal());
+		assertFalse(req.isMirrorVertical());
+	}
+
+	@Test
+	public void mirrorVerticalDict_onlyVerticalTrue() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.mirrorVerticalDict());
+		assertFalse(req.isMirrorHorizontal());
+		assertTrue(req.isMirrorVertical());
+	}
+
 	// ── type coercion (Long -> int) ───────────────────────────────────────
 
 	@Test

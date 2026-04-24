@@ -55,7 +55,9 @@ void NativeCameraPlugin::start(Dictionary requestDict) {
 							height:req.height
 							  skip:req.framesToSkip
 							   rot:req.rotation
-							  gray:req.isGrayscale];
+							  gray:req.isGrayscale
+				  mirrorHorizontal:req.isMirrorHorizontal
+					mirrorVertical:req.isMirrorVertical];
 }
 
 void NativeCameraPlugin::stop() {
