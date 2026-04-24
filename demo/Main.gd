@@ -11,6 +11,8 @@ extends Node
 @onready var rotation_slider: HSlider = %RotationHBC/RotationHSlider
 @onready var rotation_label: Label = %RotationHBC/ValueLabel
 @onready var grayscale_check_button: CheckButton = %GrayscaleCB
+@onready var horizontal_mirror_cb: CheckButton = %HorizontalMirrorCB
+@onready var vertical_mirror_cb: CheckButton = %VerticalMirrorCB
 @onready var frame_skip_slider: HSlider = %FrameSkipHBC/SkipHSlider
 @onready var frame_skip_label: Label = %FrameSkipHBC/ValueLabel
 @onready var request_permission_button := %PermissionButton as Button
@@ -96,6 +98,8 @@ func _on_start_button_pressed() -> void:
 			. set_frames_to_skip(int(frame_skip_slider.value))
 			. set_rotation(int(rotation_slider.value))
 			. set_grayscale(grayscale_check_button.button_pressed)
+			. set_mirror_horizontal(horizontal_mirror_cb.button_pressed)
+			. set_mirror_vertical(vertical_mirror_cb.button_pressed)
 		)
 	)
 	_print_to_screen(

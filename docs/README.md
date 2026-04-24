@@ -15,7 +15,7 @@
 
 # <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="24"> Godot Native Camera Plugin
 
-A Godot plugin that provides a **unified camera capture interface** for **Android** and **iOS** using native platform APIs. It enables real‑time camera frame streaming directly into Godot with configurable resolution, rotation, frame skipping, and optional grayscale output.
+A Godot plugin that provides a **unified camera capture interface** for **Android** and **iOS** using native platform APIs. It enables real‑time camera frame streaming directly into Godot with configurable resolution, rotation, frame skipping, horizontal/vertical mirroring, and optional grayscale output.
 
 **Key Features:**
 
@@ -23,7 +23,7 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 * Enumerate available cameras and their supported output sizes
 * Start and stop native camera frame streaming
 * Receive raw frame buffers or ready‑to‑use `Image` objects
-* Configurable resolution, rotation, frame skipping, and grayscale capture
+* Configurable resolution, rotation, frame skipping, horizontal/vertical mirroring, and grayscale capture
 * Designed for real‑time use cases (CV, AR preprocessing, custom rendering)
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="20"> Table of Contents
@@ -115,6 +115,8 @@ func _on_camera_permission_granted() -> void:
 		.set_height(720)
 		.set_rotation(90)
 		.set_grayscale(false)
+		.set_mirror_horizontal(true)   # flip left-right (e.g. selfie camera preview)
+		.set_mirror_vertical(false)
 
 	camera.start(request)
 
@@ -162,7 +164,7 @@ Register listeners on the `NativeCamera` node:
 
 * `create_feed_request() -> FeedRequest`
 
-  * Creates a `FeedRequest` pre-populated with the node's exported property values (`frame_width`, `frame_height`, `frames_to_skip`, `frame_rotation`, `is_grayscale`)
+  * Creates a `FeedRequest` pre-populated with the node's exported property values (`frame_width`, `frame_height`, `frames_to_skip`, `frame_rotation`, `is_grayscale`, `mirror_horizontal`, `mirror_vertical`)
 
 * `start(request: FeedRequest)`
 
@@ -197,10 +199,25 @@ Defines configuration parameters for starting a camera feed.
 * Camera ID
 * Output width and height
 * Frames to skip (performance tuning)
-* Rotation (degrees)
+* Rotation (degrees: 0, 90, 180, 270 — applied first)
 * Grayscale capture
+* Horizontal mirror (`mirror_horizontal`) — flips the frame left-to-right after rotation
+* Vertical mirror (`mirror_vertical`) — flips the frame top-to-bottom after rotation
+
+Both mirror flags default to `false` and can be combined independently with any rotation value. Mirroring is applied as a post-processing step after rotation on both Android and iOS, so the axis labels always refer to the final upright image.
 
 Supports fluent chaining via setter methods.
+
+**Setter methods:**
+
+* `set_camera_id(value: String) -> FeedRequest`
+* `set_width(value: int) -> FeedRequest`
+* `set_height(value: int) -> FeedRequest`
+* `set_frames_to_skip(value: int) -> FeedRequest`
+* `set_rotation(value: int) -> FeedRequest`
+* `set_grayscale(value: bool) -> FeedRequest`
+* `set_mirror_horizontal(value: bool) -> FeedRequest`
+* `set_mirror_vertical(value: bool) -> FeedRequest`
 
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="16"> FrameInfo
 

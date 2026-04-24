@@ -17,6 +17,8 @@ public class FeedRequest {
 	private static final String DATA_FRAMES_TO_SKIP_PROPERTY = "frames_to_skip";
 	private static final String DATA_ROTATION_PROPERTY = "rotation";
 	private static final String DATA_IS_GRAYSCALE_PROPERTY = "is_grayscale";
+	private static final String DATA_MIRROR_HORIZONTAL_PROPERTY = "mirror_horizontal";
+	private static final String DATA_MIRROR_VERTICAL_PROPERTY = "mirror_vertical";
 
 	private Dictionary data;
 
@@ -53,6 +55,18 @@ public class FeedRequest {
 
 	public boolean isGrayscale() {
 		return data.containsKey(DATA_IS_GRAYSCALE_PROPERTY) ? (boolean) data.get(DATA_IS_GRAYSCALE_PROPERTY) : false;
+	}
+
+
+	public boolean isMirrorHorizontal() {
+		return data.containsKey(DATA_MIRROR_HORIZONTAL_PROPERTY) ?
+				(boolean) data.get(DATA_MIRROR_HORIZONTAL_PROPERTY) : false;
+	}
+
+
+	public boolean isMirrorVertical() {
+		return data.containsKey(DATA_MIRROR_VERTICAL_PROPERTY) ?
+				(boolean) data.get(DATA_MIRROR_VERTICAL_PROPERTY) : false;
 	}
 
 

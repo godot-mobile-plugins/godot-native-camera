@@ -42,6 +42,13 @@ static Dictionary make_partial_dict_camera_only() {
     return d;
 }
 
+static Dictionary make_mirror_dict(bool mirrorH, bool mirrorV) {
+    Dictionary d = make_full_request_dict();
+    d[String("mirror_horizontal")] = mirrorH;
+    d[String("mirror_vertical")]   = mirrorV;
+    return d;
+}
+
 // ---------------------------------------------------------------------------
 // Test Suite
 // ---------------------------------------------------------------------------
@@ -181,6 +188,72 @@ static Dictionary make_partial_dict_camera_only() {
     d[String("camera_id")] = String::utf8("カメラ:0");
     FrameRequest *req = [[FrameRequest alloc] initWithDictionary:d];
     XCTAssertEqualObjects(req.cameraId, @"カメラ:0");
+}
+
+// MARK: - Mirror flags
+
+- (void)test_isMirrorHorizontal_fullDict_returnsFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_full_request_dict()];
+    XCTAssertFalse(req.isMirrorHorizontal);
+}
+
+- (void)test_isMirrorHorizontal_trueExplicit_returnsTrue {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_mirror_dict(true, false)];
+    XCTAssertTrue(req.isMirrorHorizontal);
+}
+
+- (void)test_isMirrorHorizontal_emptyDict_returnsFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_empty_dict()];
+    XCTAssertFalse(req.isMirrorHorizontal);
+}
+
+- (void)test_isMirrorHorizontal_falseExplicit_returnsFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_mirror_dict(false, false)];
+    XCTAssertFalse(req.isMirrorHorizontal);
+}
+
+- (void)test_isMirrorVertical_fullDict_returnsFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_full_request_dict()];
+    XCTAssertFalse(req.isMirrorVertical);
+}
+
+- (void)test_isMirrorVertical_trueExplicit_returnsTrue {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_mirror_dict(false, true)];
+    XCTAssertTrue(req.isMirrorVertical);
+}
+
+- (void)test_isMirrorVertical_emptyDict_returnsFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_empty_dict()];
+    XCTAssertFalse(req.isMirrorVertical);
+}
+
+- (void)test_isMirrorVertical_falseExplicit_returnsFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_mirror_dict(false, false)];
+    XCTAssertFalse(req.isMirrorVertical);
+}
+
+- (void)test_mirrorBoth_bothTrue {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_mirror_dict(true, true)];
+    XCTAssertTrue(req.isMirrorHorizontal);
+    XCTAssertTrue(req.isMirrorVertical);
+}
+
+- (void)test_mirrorHorizontalOnly_verticalFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_mirror_dict(true, false)];
+    XCTAssertTrue(req.isMirrorHorizontal);
+    XCTAssertFalse(req.isMirrorVertical);
+}
+
+- (void)test_mirrorVerticalOnly_horizontalFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_mirror_dict(false, true)];
+    XCTAssertFalse(req.isMirrorHorizontal);
+    XCTAssertTrue(req.isMirrorVertical);
+}
+
+- (void)test_missingMirrorKeys_partialDict_defaultToFalse {
+    FrameRequest *req = [[FrameRequest alloc] initWithDictionary:make_partial_dict_camera_only()];
+    XCTAssertFalse(req.isMirrorHorizontal);
+    XCTAssertFalse(req.isMirrorVertical);
 }
 
 @end

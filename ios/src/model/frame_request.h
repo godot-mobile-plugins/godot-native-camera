@@ -27,6 +27,10 @@
 
 - (BOOL)isGrayscale;
 
+- (BOOL)isMirrorHorizontal;
+
+- (BOOL)isMirrorVertical;
+
 @end
 
 #endif /* frame_request_h */
