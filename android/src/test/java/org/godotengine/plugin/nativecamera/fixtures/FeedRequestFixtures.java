@@ -16,7 +16,7 @@ public final class FeedRequestFixtures {
 	private FeedRequestFixtures() {
 	}
 
-	/** All fields populated with non-default values. */
+	/** All fields populated with non-default values. scale_width and scale_height are 0 (disabled). */
 	public static Dictionary fullDict() {
 		Dictionary d = new Dictionary();
 		d.put("camera_id", "0");
@@ -27,6 +27,8 @@ public final class FeedRequestFixtures {
 		d.put("is_grayscale", false);
 		d.put("mirror_horizontal", false);
 		d.put("mirror_vertical", false);
+		d.put("scale_width", 0L);
+		d.put("scale_height", 0L);
 		return d;
 	}
 
@@ -94,6 +96,52 @@ public final class FeedRequestFixtures {
 		Dictionary d = fullDict();
 		d.put("mirror_horizontal", true);
 		d.put("mirror_vertical", true);
+		return d;
+	}
+
+	// ── Scale variants ─────────────────────────────────────────────────────
+
+	/**
+	 * Both scale dimensions set to 640×360 — half the default 1280×720 capture
+	 * size. Scaling should be applied because both values are non-zero.
+	 */
+	public static Dictionary scaledDict() {
+		Dictionary d = fullDict();
+		d.put("scale_width", 640L);
+		d.put("scale_height", 360L);
+		return d;
+	}
+
+	/**
+	 * scale_width populated, scale_height remains 0 (from fullDict).
+	 * Scaling must NOT be applied when either dimension is zero.
+	 */
+	public static Dictionary scaleWidthOnlyDict() {
+		Dictionary d = fullDict();
+		d.put("scale_width", 640L);
+		// scale_height stays 0L from fullDict
+		return d;
+	}
+
+	/**
+	 * scale_height populated, scale_width remains 0 (from fullDict).
+	 * Scaling must NOT be applied when either dimension is zero.
+	 */
+	public static Dictionary scaleHeightOnlyDict() {
+		Dictionary d = fullDict();
+		d.put("scale_height", 360L);
+		// scale_width stays 0L from fullDict
+		return d;
+	}
+
+	/**
+	 * Scale dimensions that equal the capture resolution (1280×720).
+	 * The guard passes; the plugin skips the copy as src == dst size.
+	 */
+	public static Dictionary scaleIdentityDict() {
+		Dictionary d = fullDict();
+		d.put("scale_width", 1280L);
+		d.put("scale_height", 720L);
 		return d;
 	}
 }

@@ -88,6 +88,7 @@ public class FeedRequestTest {
 
 	@Test
 	public void getFramesToSkip_minimalDict_returnsDefaultOne() {
+		// minimalDict has no frames_to_skip key → default 1
 		FeedRequest req = new FeedRequest(FeedRequestFixtures.minimalDict());
 		assertEquals(1, req.getFramesToSkip());
 	}
@@ -222,6 +223,101 @@ public class FeedRequestTest {
 		assertTrue(req.isMirrorVertical());
 	}
 
+	// ── scaleWidth ────────────────────────────────────────────────────────
+
+	@Test
+	public void getScaleWidth_returnsValueFromDict() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaledDict());
+		assertEquals(640, req.getScaleWidth());
+	}
+
+	@Test
+	public void getScaleWidth_missingKey_returnsDefaultZero() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.emptyDict());
+		assertEquals(0, req.getScaleWidth());
+	}
+
+	@Test
+	public void getScaleWidth_zeroInFullDict_returnsZero() {
+		// fullDict() stores scale_width = 0 (disabled)
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.fullDict());
+		assertEquals(0, req.getScaleWidth());
+	}
+
+	@Test
+	public void getScaleWidth_minimalDict_returnsDefaultZero() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.minimalDict());
+		assertEquals(0, req.getScaleWidth());
+	}
+
+	@Test
+	public void getScaleWidth_scaleWidthOnlyDict_returnsValue() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaleWidthOnlyDict());
+		assertEquals(640, req.getScaleWidth());
+	}
+
+	// ── scaleHeight ───────────────────────────────────────────────────────
+
+	@Test
+	public void getScaleHeight_returnsValueFromDict() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaledDict());
+		assertEquals(360, req.getScaleHeight());
+	}
+
+	@Test
+	public void getScaleHeight_missingKey_returnsDefaultZero() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.emptyDict());
+		assertEquals(0, req.getScaleHeight());
+	}
+
+	@Test
+	public void getScaleHeight_zeroInFullDict_returnsZero() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.fullDict());
+		assertEquals(0, req.getScaleHeight());
+	}
+
+	@Test
+	public void getScaleHeight_minimalDict_returnsDefaultZero() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.minimalDict());
+		assertEquals(0, req.getScaleHeight());
+	}
+
+	@Test
+	public void getScaleHeight_scaleHeightOnlyDict_returnsValue() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaleHeightOnlyDict());
+		assertEquals(360, req.getScaleHeight());
+	}
+
+	// ── scale combined ────────────────────────────────────────────────────
+
+	@Test
+	public void scaledDict_bothDimensionsPopulated() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaledDict());
+		assertEquals(640, req.getScaleWidth());
+		assertEquals(360, req.getScaleHeight());
+	}
+
+	@Test
+	public void scaleIdentityDict_dimensionsEqualCaptureSize() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaleIdentityDict());
+		assertEquals(1280, req.getScaleWidth());
+		assertEquals(720, req.getScaleHeight());
+	}
+
+	@Test
+	public void scaleWidthOnlyDict_heightRemainsZero() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaleWidthOnlyDict());
+		assertEquals(640, req.getScaleWidth());
+		assertEquals(0, req.getScaleHeight());
+	}
+
+	@Test
+	public void scaleHeightOnlyDict_widthRemainsZero() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.scaleHeightOnlyDict());
+		assertEquals(0, req.getScaleWidth());
+		assertEquals(360, req.getScaleHeight());
+	}
+
 	// ── type coercion (Long -> int) ───────────────────────────────────────
 
 	@Test
@@ -232,11 +328,15 @@ public class FeedRequestTest {
 		d.put("height", Long.MAX_VALUE);
 		d.put("frames_to_skip", Long.MAX_VALUE);
 		d.put("rotation", Long.MAX_VALUE);
+		d.put("scale_width", Long.MAX_VALUE);
+		d.put("scale_height", Long.MAX_VALUE);
 		FeedRequest req = new FeedRequest(d);
 		// Just calling the getters must not throw
 		req.getWidth();
 		req.getHeight();
 		req.getFramesToSkip();
 		req.getRotation();
+		req.getScaleWidth();
+		req.getScaleHeight();
 	}
 }

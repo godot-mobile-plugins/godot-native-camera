@@ -67,6 +67,10 @@ public class NativeCameraPlugin extends GodotPlugin {
 	private volatile boolean isGrayscale;
 	private volatile boolean mirrorHorizontal;
 	private volatile boolean mirrorVertical;
+	/** Target width for post-capture scaling; 0 means disabled. */
+	private volatile int scaleWidth;
+	/** Target height for post-capture scaling; 0 means disabled. */
+	private volatile int scaleHeight;
 	private int frameCounter = 0;
 
 	private volatile boolean running = false;
@@ -168,6 +172,8 @@ public class NativeCameraPlugin extends GodotPlugin {
 		isGrayscale = feedRequest.isGrayscale();
 		mirrorHorizontal = feedRequest.isMirrorHorizontal();
 		mirrorVertical = feedRequest.isMirrorVertical();
+		scaleWidth = feedRequest.getScaleWidth();
+		scaleHeight = feedRequest.getScaleHeight();
 		openCamera(feedRequest);
 	}
 
@@ -425,6 +431,18 @@ public class NativeCameraPlugin extends GodotPlugin {
 				}
 			}
 
+			// Scaling is applied last — after rotation and mirroring — so that
+			// scale_width and scale_height always describe the final emitted dimensions.
+			if (scaleWidth > 0 && scaleHeight > 0 && (scaleWidth != width || scaleHeight != height)) {
+				if (isGrayscale) {
+					output = scaleGray(output, width, height, scaleWidth, scaleHeight);
+				} else {
+					output = scaleRGBA(output, width, height, scaleWidth, scaleHeight);
+				}
+				width = scaleWidth;
+				height = scaleHeight;
+			}
+
 			if (running) {
 				emitFrame(output, width, height, rotation, isGrayscale);
 			}
@@ -607,6 +625,43 @@ public class NativeCameraPlugin extends GodotPlugin {
 			for (int x = 0; x < width; x++) {
 				int dx = horizontal ? (width - 1 - x) : x;
 				dst[dy * width + dx] = src[y * width + x];
+			}
+		}
+		return dst;
+	}
+
+	/**
+	 * Scales an RGBA (4 bytes/pixel) frame buffer to {@code dstW × dstH} using
+	 * nearest-neighbour interpolation. Applied after rotation and mirroring.
+	 */
+	static byte[] scaleRGBA(byte[] src, int srcW, int srcH, int dstW, int dstH) {
+		byte[] dst = new byte[dstW * dstH * 4];
+		for (int dy = 0; dy < dstH; dy++) {
+			int sy = dy * srcH / dstH;
+			for (int dx = 0; dx < dstW; dx++) {
+				int sx = dx * srcW / dstW;
+				int srcIdx = (sy * srcW + sx) * 4;
+				int dstIdx = (dy * dstW + dx) * 4;
+				dst[dstIdx] = src[srcIdx];
+				dst[dstIdx + 1] = src[srcIdx + 1];
+				dst[dstIdx + 2] = src[srcIdx + 2];
+				dst[dstIdx + 3] = src[srcIdx + 3];
+			}
+		}
+		return dst;
+	}
+
+	/**
+	 * Scales a grayscale (1 byte/pixel) frame buffer to {@code dstW × dstH} using
+	 * nearest-neighbour interpolation. Applied after rotation and mirroring.
+	 */
+	static byte[] scaleGray(byte[] src, int srcW, int srcH, int dstW, int dstH) {
+		byte[] dst = new byte[dstW * dstH];
+		for (int dy = 0; dy < dstH; dy++) {
+			int sy = dy * srcH / dstH;
+			for (int dx = 0; dx < dstW; dx++) {
+				int sx = dx * srcW / dstW;
+				dst[dy * dstW + dx] = src[sy * srcW + sx];
 			}
 		}
 		return dst;

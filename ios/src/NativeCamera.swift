@@ -25,14 +25,8 @@ import UIKit
 	private var videoOutput: AVCaptureVideoDataOutput?
 	private let sessionQueue = DispatchQueue(label: "camera_session_queue")
 
-	private var framesToSkip: Int = 0
+	private var frameRequest: FrameRequest?
 	private var frameCounter: Int = 0
-	private var rotation: Int = 0
-	private var isGrayscale: Bool = false
-	private var mirrorHorizontal: Bool = false
-	private var mirrorVertical: Bool = false
-	private var targetWidth: Int = 0
-	private var targetHeight: Int = 0
 
 	@objc public static func hasPermission() -> Bool {
 		return AVCaptureDevice.authorizationStatus(for: .video) == .authorized
@@ -46,7 +40,7 @@ import UIKit
 		}
 	}
 
-	@objc public func getCameras() -> [CameraInfo] { // Changed return type
+	@objc public func getCameras() -> [CameraInfo] {
 		let discoverySession = AVCaptureDevice.DiscoverySession(
 			deviceTypes: [.builtInWideAngleCamera],
 			mediaType: .video,
@@ -62,8 +56,7 @@ import UIKit
 		}
 	}
 
-	@objc public func start(cameraId: String, width: Int, height: Int, skip: Int, rot: Int, gray: Bool,
-			mirrorHorizontal: Bool, mirrorVertical: Bool) {
+	@objc public func start(request: FrameRequest) {
 		// Dispatch everything onto sessionQueue so stop() fully completes
 		// before we reconfigure, AND so variable writes are on the same
 		// queue that captureOutput reads them from — no data race.
@@ -72,21 +65,14 @@ import UIKit
 			self.captureSession = nil
 			self.videoOutput = nil
 
-			// Set instance vars inside sessionQueue, so captureOutput
-			// (also on sessionQueue) always sees a consistent, written value.
-			self.targetWidth = width
-			self.targetHeight = height
-			self.framesToSkip = skip
-			self.rotation = rot
-			self.isGrayscale = gray
-			self.mirrorHorizontal = mirrorHorizontal
-			self.mirrorVertical = mirrorVertical
+			// Store the request and reset counter
+			self.frameRequest = request
 			self.frameCounter = 0
 
 			let session = AVCaptureSession()
 			session.beginConfiguration()
 
-			guard let device = AVCaptureDevice(uniqueID: cameraId),
+			guard let device = AVCaptureDevice(uniqueID: request.cameraId()),
 				let input = try? AVCaptureDeviceInput(device: device) else { return }
 
 			if session.canAddInput(input) { session.addInput(input) }
@@ -118,8 +104,10 @@ import UIKit
 
 	public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer,
 			from connection: AVCaptureConnection) {
+		guard let req = frameRequest else { return }
+
 		frameCounter += 1
-		if frameCounter % (framesToSkip + 1) != 0 { return }
+		if frameCounter % (req.framesToSkip() + 1) != 0 { return }
 
 		guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
@@ -133,7 +121,7 @@ import UIKit
 		let totalPixels = width * height
 		var outputData: Data
 
-		if isGrayscale {
+		if req.isGrayscale() {
 			// Extract Luminance from BGRA (Approximation: Blue channel or average)
 			// For true YUV-Y extraction, we'd change videoSettings to 420v
 			var grayBytes = [UInt8](repeating: 0, count: totalPixels)
@@ -157,19 +145,28 @@ import UIKit
 		}
 
 		// Handle Rotation
-		let rotated = rotateData(outputData, w: width, h: height, degrees: rotation, gray: isGrayscale)
+		let rotated = rotateData(outputData, w: width, h: height, degrees: req.rotation(), gray: req.isGrayscale())
 
 		// Handle Mirror (applied after rotation, same as Android)
-		let final = mirrorData(rotated.data, w: rotated.w, h: rotated.h,
-				gray: isGrayscale, horizontal: mirrorHorizontal, vertical: mirrorVertical)
+		let mirrored = mirrorData(rotated.data, w: rotated.w, h: rotated.h,
+				gray: req.isGrayscale(), horizontal: req.isMirrorHorizontal(), vertical: req.isMirrorVertical())
+
+		// Handle Scaling (applied last — after rotation and mirroring)
+		let final: (data: Data, w: Int, h: Int)
+		if req.scaleWidth() > 0 && req.scaleHeight() > 0 {
+			final = scaleData(mirrored.data, srcW: mirrored.w, srcH: mirrored.h,
+					dstW: req.scaleWidth(), dstH: req.scaleHeight(), gray: req.isGrayscale())
+		} else {
+			final = mirrored
+		}
 
 		DispatchQueue.main.async {
 			let info = FrameInfo(
 				buffer: final.data,
 				width: final.w,
 				height: final.h,
-				rotation: self.rotation,
-				isGrayscale: self.isGrayscale
+				rotation: req.rotation(),
+				isGrayscale: req.isGrayscale()
 			)
 			self.onFrameAvailable?(info)
 		}
@@ -234,5 +231,28 @@ import UIKit
 			}
 		}
 		return (Data(dst), w, h)
+	}
+
+	/// Scales a pixel buffer to `dstW × dstH` using nearest-neighbour interpolation.
+	/// Applied after rotation and mirroring — the last post-processing step before emit.
+	/// Supports both RGBA (4 bytes/pixel) and grayscale (1 byte/pixel) buffers.
+	internal func scaleData(_ src: Data, srcW: Int, srcH: Int,
+			dstW: Int, dstH: Int, gray: Bool) -> (data: Data, w: Int, h: Int) {
+		let bytesPerPixel = gray ? 1 : 4
+		var dst = [UInt8](repeating: 0, count: dstW * dstH * bytesPerPixel)
+		let srcArray = [UInt8](src)
+
+		for dy in 0..<dstH {
+			let sy = dy * srcH / dstH
+			for dx in 0..<dstW {
+				let sx = dx * srcW / dstW
+				let srcIdx = (sy * srcW + sx) * bytesPerPixel
+				let dstIdx = (dy * dstW + dx) * bytesPerPixel
+				for i in 0..<bytesPerPixel {
+					dst[dstIdx + i] = srcArray[srcIdx + i]
+				}
+			}
+		}
+		return (Data(dst), dstW, dstH)
 	}
 }
