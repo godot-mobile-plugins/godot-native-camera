@@ -23,7 +23,7 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 * Enumerate available cameras and their supported output sizes
 * Start and stop native camera frame streaming
 * Receive raw frame buffers or ready‑to‑use `Image` objects
-* Configurable resolution, rotation, frame skipping, horizontal/vertical mirroring, and grayscale capture
+* Configurable resolution, rotation, frame skipping, horizontal/vertical mirroring, grayscale capture, and post-capture scaling
 * Designed for real‑time use cases (CV, AR preprocessing, custom rendering)
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="20"> Table of Contents
@@ -117,6 +117,8 @@ func _on_camera_permission_granted() -> void:
 		.set_grayscale(false)
 		.set_mirror_horizontal(true)   # flip left-right (e.g. selfie camera preview)
 		.set_mirror_vertical(false)
+		.set_scale_width(640)          # downscale to 640×360 before emitting
+		.set_scale_height(360)
 
 	camera.start(request)
 
@@ -164,7 +166,7 @@ Register listeners on the `NativeCamera` node:
 
 * `create_feed_request() -> FeedRequest`
 
-  * Creates a `FeedRequest` pre-populated with the node's exported property values (`frame_width`, `frame_height`, `frames_to_skip`, `frame_rotation`, `is_grayscale`, `mirror_horizontal`, `mirror_vertical`)
+  * Creates a `FeedRequest` pre-populated with the node's exported property values (`frame_width`, `frame_height`, `frames_to_skip`, `frame_rotation`, `is_grayscale`, `mirror_horizontal`, `mirror_vertical`, `scale_width`, `scale_height`)
 
 * `start(request: FeedRequest)`
 
@@ -203,8 +205,11 @@ Defines configuration parameters for starting a camera feed.
 * Grayscale capture
 * Horizontal mirror (`mirror_horizontal`) — flips the frame left-to-right after rotation
 * Vertical mirror (`mirror_vertical`) — flips the frame top-to-bottom after rotation
+* Scale width and height (`scale_width`, `scale_height`) — resizes the pixel buffer to the given dimensions as the final post-processing step (after rotation and mirroring); both must be non-zero for scaling to take effect; defaults to 0 (disabled)
 
 Both mirror flags default to `false` and can be combined independently with any rotation value. Mirroring is applied as a post-processing step after rotation on both Android and iOS, so the axis labels always refer to the final upright image.
+
+Scaling is applied after mirroring and uses nearest-neighbour interpolation, making it suitable for real-time use cases such as downscaling before CV inference. Setting either `scale_width` or `scale_height` to 0 disables scaling entirely.
 
 Supports fluent chaining via setter methods.
 
@@ -218,6 +223,8 @@ Supports fluent chaining via setter methods.
 * `set_grayscale(value: bool) -> FeedRequest`
 * `set_mirror_horizontal(value: bool) -> FeedRequest`
 * `set_mirror_vertical(value: bool) -> FeedRequest`
+* `set_scale_width(value: int) -> FeedRequest`
+* `set_scale_height(value: int) -> FeedRequest`
 
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="16"> FrameInfo
 

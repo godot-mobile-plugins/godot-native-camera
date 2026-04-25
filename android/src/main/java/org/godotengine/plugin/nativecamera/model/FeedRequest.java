@@ -19,6 +19,8 @@ public class FeedRequest {
 	private static final String DATA_IS_GRAYSCALE_PROPERTY = "is_grayscale";
 	private static final String DATA_MIRROR_HORIZONTAL_PROPERTY = "mirror_horizontal";
 	private static final String DATA_MIRROR_VERTICAL_PROPERTY = "mirror_vertical";
+	private static final String DATA_SCALE_WIDTH_PROPERTY = "scale_width";
+	private static final String DATA_SCALE_HEIGHT_PROPERTY = "scale_height";
 
 	private Dictionary data;
 
@@ -67,6 +69,26 @@ public class FeedRequest {
 	public boolean isMirrorVertical() {
 		return data.containsKey(DATA_MIRROR_VERTICAL_PROPERTY) ?
 				(boolean) data.get(DATA_MIRROR_VERTICAL_PROPERTY) : false;
+	}
+
+
+	/**
+	 * Returns the target width (pixels) to scale the post-processed frame to.
+	 * A value of 0 (the default) means no scaling on this axis.
+	 * Scaling is only applied when both scale_width and scale_height are non-zero.
+	 */
+	public int getScaleWidth() {
+		return data.containsKey(DATA_SCALE_WIDTH_PROPERTY) ? toInt(data.get(DATA_SCALE_WIDTH_PROPERTY)) : 0;
+	}
+
+
+	/**
+	 * Returns the target height (pixels) to scale the post-processed frame to.
+	 * A value of 0 (the default) means no scaling on this axis.
+	 * Scaling is only applied when both scale_width and scale_height are non-zero.
+	 */
+	public int getScaleHeight() {
+		return data.containsKey(DATA_SCALE_HEIGHT_PROPERTY) ? toInt(data.get(DATA_SCALE_HEIGHT_PROPERTY)) : 0;
 	}
 
 

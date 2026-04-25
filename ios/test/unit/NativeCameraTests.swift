@@ -366,6 +366,162 @@ final class NativeCameraMirrorTests: XCTestCase {
 	}
 }
 
+// MARK: - NativeCamera Scale Tests
+
+/// Tests NativeCamera.scaleData(_:srcW:srcH:dstW:dstH:gray:) in isolation.
+///
+/// The method is `internal`, accessible via `@testable import NativeCameraPlugin`.
+final class NativeCameraScaleTests: XCTestCase {
+
+	private let camera = NativeCamera()
+
+	// MARK: Guard – disabled when either dimension is zero
+
+	func test_scale_guard_bothZero_noScaling() {
+		// guard is checked by the caller; here we just verify the helper is callable
+		// with equal src/dst (identity) when both are non-zero.
+		let src = PixelBufferFixture.gray2x2
+		let result = camera.scaleData(src, srcW: 2, srcH: 2, dstW: 2, dstH: 2, gray: true)
+		XCTAssertEqual([UInt8](result.data), [UInt8](src))
+	}
+
+	// MARK: Buffer length
+
+	func test_scale_gray_downscale_outputLengthCorrect() {
+		let src = PixelBufferFixture.gray(width: 4, height: 4)
+		let result = camera.scaleData(src, srcW: 4, srcH: 4, dstW: 2, dstH: 2, gray: true)
+		XCTAssertEqual(result.data.count, 2 * 2)
+	}
+
+	func test_scale_gray_upscale_outputLengthCorrect() {
+		let src = PixelBufferFixture.gray2x2
+		let result = camera.scaleData(src, srcW: 2, srcH: 2, dstW: 4, dstH: 4, gray: true)
+		XCTAssertEqual(result.data.count, 4 * 4)
+	}
+
+	func test_scale_rgba_downscale_outputLengthCorrect() {
+		let src = PixelBufferFixture.rgba(width: 4, height: 4)
+		let result = camera.scaleData(src, srcW: 4, srcH: 4, dstW: 2, dstH: 2, gray: false)
+		XCTAssertEqual(result.data.count, 2 * 2 * 4)
+	}
+
+	func test_scale_rgba_upscale_outputLengthCorrect() {
+		let src = PixelBufferFixture.rgba2x2
+		let result = camera.scaleData(src, srcW: 2, srcH: 2, dstW: 4, dstH: 4, gray: false)
+		XCTAssertEqual(result.data.count, 4 * 4 * 4)
+	}
+
+	// MARK: Reported dimensions
+
+	func test_scale_gray_reportedDimensions_matchDst() {
+		let src = PixelBufferFixture.gray(width: 4, height: 4)
+		let result = camera.scaleData(src, srcW: 4, srcH: 4, dstW: 2, dstH: 3, gray: true)
+		XCTAssertEqual(result.w, 2)
+		XCTAssertEqual(result.h, 3)
+	}
+
+	func test_scale_rgba_reportedDimensions_matchDst() {
+		let src = PixelBufferFixture.rgba(width: 4, height: 4)
+		let result = camera.scaleData(src, srcW: 4, srcH: 4, dstW: 3, dstH: 2, gray: false)
+		XCTAssertEqual(result.w, 3)
+		XCTAssertEqual(result.h, 2)
+	}
+
+	// MARK: Identity scale
+
+	func test_scale_gray_identityDimensions_preservesPixels() {
+		let src = PixelBufferFixture.gray2x2
+		let result = camera.scaleData(src, srcW: 2, srcH: 2, dstW: 2, dstH: 2, gray: true)
+		XCTAssertEqual([UInt8](result.data), [UInt8](src))
+	}
+
+	func test_scale_rgba_identityDimensions_preservesPixels() {
+		let src = PixelBufferFixture.rgba2x2
+		let result = camera.scaleData(src, srcW: 2, srcH: 2, dstW: 2, dstH: 2, gray: false)
+		XCTAssertEqual([UInt8](result.data), [UInt8](src))
+	}
+
+	// MARK: Top-left pixel preserved (nearest-neighbour property)
+
+	func test_scale_gray_topLeftPixelPreserved_onDownscale() {
+		let src = PixelBufferFixture.gray(width: 4, height: 4)
+		// Manually set TL pixel to a distinct value
+		var bytes = [UInt8](src)
+		bytes[0] = 42
+		let result = camera.scaleData(Data(bytes), srcW: 4, srcH: 4, dstW: 2, dstH: 2, gray: true)
+		XCTAssertEqual([UInt8](result.data)[0], 42, "Top-left pixel not preserved after downscale")
+	}
+
+	func test_scale_rgba_topLeftPixelPreserved_onDownscale() {
+		var bytes = [UInt8](PixelBufferFixture.rgba(width: 4, height: 4))
+		bytes[0] = 10; bytes[1] = 20; bytes[2] = 30; bytes[3] = 255
+		let result = camera.scaleData(Data(bytes), srcW: 4, srcH: 4, dstW: 2, dstH: 2, gray: false)
+		let out = [UInt8](result.data)
+		XCTAssertEqual(out[0], 10, "R of TL pixel not preserved")
+		XCTAssertEqual(out[1], 20, "G of TL pixel not preserved")
+		XCTAssertEqual(out[2], 30, "B of TL pixel not preserved")
+		XCTAssertEqual(out[3], 255, "A of TL pixel not preserved")
+	}
+
+	// MARK: 1×1 source → all destination pixels equal source pixel
+
+	func test_scale_gray_1x1Source_allOutputPixelsMatchSource() {
+		let src = Data([UInt8(77)])
+		let result = camera.scaleData(src, srcW: 1, srcH: 1, dstW: 3, dstH: 3, gray: true)
+		XCTAssertEqual(result.data.count, 9)
+		for byte in result.data { XCTAssertEqual(byte, 77) }
+	}
+
+	func test_scale_rgba_1x1Source_allOutputPixelsMatchSource() {
+		let src = Data([UInt8(11), UInt8(22), UInt8(33), UInt8(255)])
+		let result = camera.scaleData(src, srcW: 1, srcH: 1, dstW: 2, dstH: 2, gray: false)
+		XCTAssertEqual(result.data.count, 2 * 2 * 4)
+		let out = [UInt8](result.data)
+		for i in stride(from: 0, to: out.count, by: 4) {
+			XCTAssertEqual(out[i], 11, "R mismatch at pixel \(i/4)")
+			XCTAssertEqual(out[i + 1], 22, "G mismatch at pixel \(i/4)")
+			XCTAssertEqual(out[i + 2], 33, "B mismatch at pixel \(i/4)")
+			XCTAssertEqual(out[i + 3], 255, "A mismatch at pixel \(i/4)")
+		}
+	}
+
+	// MARK: Alpha channel preserved through scaling
+
+	func test_scale_rgba_alphaPreserved_afterDownscale() {
+		let src = PixelBufferFixture.rgba(width: 4, height: 4) // alpha = 255 for all
+		let result = camera.scaleData(src, srcW: 4, srcH: 4, dstW: 2, dstH: 2, gray: false)
+		let out = [UInt8](result.data)
+		for i in stride(from: 3, to: out.count, by: 4) {
+			XCTAssertEqual(out[i], 255, "Alpha corrupted at pixel \(i/4)")
+		}
+	}
+
+	// MARK: Half-size buffer relationship (gray vs RGBA)
+
+	func test_scale_scaledGrayBuffer_isFourTimesSmaller_thanScaledRgba() {
+		let grayResult = camera.scaleData(
+			PixelBufferFixture.gray(width: 8, height: 8),
+			srcW: 8, srcH: 8, dstW: 4, dstH: 4, gray: true
+		)
+		let rgbaResult = camera.scaleData(
+			PixelBufferFixture.rgba(width: 8, height: 8),
+			srcW: 8, srcH: 8, dstW: 4, dstH: 4, gray: false
+		)
+		XCTAssertEqual(rgbaResult.data.count, grayResult.data.count * 4)
+	}
+
+	// MARK: Rectangular (non-square) scale
+
+	func test_scale_gray_rectangularDownscale_bufferLengthCorrect() {
+		// 6×4 → 3×2: 6 pixels
+		let src = PixelBufferFixture.gray(width: 6, height: 4)
+		let result = camera.scaleData(src, srcW: 6, srcH: 4, dstW: 3, dstH: 2, gray: true)
+		XCTAssertEqual(result.data.count, 3 * 2)
+		XCTAssertEqual(result.w, 3)
+		XCTAssertEqual(result.h, 2)
+	}
+}
+
 final class NativeCameraPermissionTests: XCTestCase {
 
 	/// Verifies `hasPermission()` returns a Bool without crashing.

@@ -137,6 +137,23 @@ enum PixelBufferFixture {
 		]
 		return Data(bytes)
 	}()
+
+	// MARK: 4×4 source for downscale / upscale tests (nearest-neighbour)
+
+	/// 4×4 grayscale ramp: pixel(x,y) = y*4 + x  (values 0…15)
+	static let gray4x4: Data = Data((0..<16).map { UInt8($0) })
+
+	/// 4×4 RGBA: R channel = pixel index (0…15), G=B=0, A=255
+	static let rgba4x4: Data = {
+		var bytes = [UInt8](repeating: 0, count: 16 * 4)
+		for i in 0..<16 {
+			bytes[i * 4]     = UInt8(i)   // R
+			bytes[i * 4 + 1] = 0          // G
+			bytes[i * 4 + 2] = 0          // B
+			bytes[i * 4 + 3] = 255        // A
+		}
+		return Data(bytes)
+	}()
 }
 
 // MARK: - FrameRequest Dictionary Fixtures (mirrors ObjC frame_request keys)
@@ -148,22 +165,50 @@ enum FrameRequestFixture {
 	static let framesToSkipKey = "frames_to_skip"
 	static let rotationKey     = "rotation"
 	static let isGrayscaleKey  = "is_grayscale"
+	static let scaleWidthKey   = "scale_width"
+	static let scaleHeightKey  = "scale_height"
 
 	static let sampleCameraId = "com.apple.avfoundation.avcapturedevice.built-in_video:0"
 
-	/// Fully-populated request parameters
+	/// Fully-populated request parameters (scaling disabled)
 	static let fullParams: [String: Any] = [
 		cameraIdKey: sampleCameraId,
 		widthKey: 1280,
 		heightKey: 720,
 		framesToSkipKey: 2,
 		rotationKey: 90,
-		isGrayscaleKey: false
+		isGrayscaleKey: false,
+		scaleWidthKey: 0,
+		scaleHeightKey: 0
 	]
 
 	/// Minimal request – only camera_id; all other fields should fall back to defaults
 	static let minimalParams: [String: Any] = [
 		cameraIdKey: sampleCameraId
+	]
+
+	/// Request with scaling to half the capture resolution (640×360 from 1280×720)
+	static let scaledParams: [String: Any] = [
+		cameraIdKey: sampleCameraId,
+		widthKey: 1280,
+		heightKey: 720,
+		framesToSkipKey: 0,
+		rotationKey: 0,
+		isGrayscaleKey: false,
+		scaleWidthKey: 640,
+		scaleHeightKey: 360
+	]
+
+	/// scale_width set, scale_height absent — scaling must not be applied.
+	static let scaleWidthOnlyParams: [String: Any] = [
+		cameraIdKey: sampleCameraId,
+		scaleWidthKey: 640
+	]
+
+	/// scale_height set, scale_width absent — scaling must not be applied.
+	static let scaleHeightOnlyParams: [String: Any] = [
+		cameraIdKey: sampleCameraId,
+		scaleHeightKey: 360
 	]
 
 	/// Default values expected when keys are absent
@@ -173,5 +218,7 @@ enum FrameRequestFixture {
 		static let framesToSkip = 0
 		static let rotation     = 0
 		static let isGrayscale  = false
+		static let scaleWidth   = 0
+		static let scaleHeight  = 0
 	}
 }

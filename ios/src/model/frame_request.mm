@@ -3,6 +3,11 @@
 //
 
 #import "frame_request.h"
+#include "core/object/class_db.h"
+
+@interface FrameRequest ()
+@property(nonatomic, assign) Dictionary rawData;
+@end
 
 @implementation FrameRequest
 
@@ -14,10 +19,13 @@ static String const kRotationProperty = "rotation";
 static String const kIsGrayscaleProperty = "is_grayscale";
 static String const kMirrorHorizontalProperty = "mirror_horizontal";
 static String const kMirrorVerticalProperty = "mirror_vertical";
+static String const kScaleWidthProperty = "scale_width";
+static String const kScaleHeightProperty = "scale_height";
 
-- (instancetype)initWithDictionary:(Dictionary)data {
-	if ((self = [super init])) {
-		self.rawData = data;
+- (instancetype)initWithRawData:(void *)data {
+	self = [super init];
+	if (self) {
+		_rawData = *(Dictionary *)data;
 	}
 	return self;
 }
@@ -55,6 +63,15 @@ static String const kMirrorVerticalProperty = "mirror_vertical";
 
 - (BOOL)isMirrorVertical {
 	return self.rawData.has(kMirrorVerticalProperty) ? (BOOL)self.rawData[kMirrorVerticalProperty] : NO;
+}
+
+- (NSInteger)scaleWidth {
+	return self.rawData.has(kScaleWidthProperty) ? (NSInteger)self.rawData[kScaleWidthProperty].operator int64_t() : 0;
+}
+
+- (NSInteger)scaleHeight {
+	return self.rawData.has(kScaleHeightProperty) ? (NSInteger)self.rawData[kScaleHeightProperty].operator int64_t()
+												  : 0;
 }
 
 @end

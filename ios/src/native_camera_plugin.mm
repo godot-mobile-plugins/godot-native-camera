@@ -49,15 +49,11 @@ Array NativeCameraPlugin::get_all_cameras() {
 }
 
 void NativeCameraPlugin::start(Dictionary requestDict) {
-	FrameRequest *req = [[FrameRequest alloc] initWithDictionary:requestDict];
-	[swiftCamera startWithCameraId:req.cameraId
-							 width:req.width
-							height:req.height
-							  skip:req.framesToSkip
-							   rot:req.rotation
-							  gray:req.isGrayscale
-				  mirrorHorizontal:req.isMirrorHorizontal
-					mirrorVertical:req.isMirrorVertical];
+	// Pass the memory address of the C++ Dictionary to the wrapper
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&requestDict];
+
+	// Start the Swift camera by passing the FrameRequest object
+	[swiftCamera startWithRequest:req];
 }
 
 void NativeCameraPlugin::stop() {

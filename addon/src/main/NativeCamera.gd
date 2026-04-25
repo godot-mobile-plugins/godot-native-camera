@@ -34,6 +34,16 @@ const PLUGIN_SINGLETON_NAME: String = "@pluginName@"
 ## Whether the emitted frames should be flipped vertically (top-bottom mirror).
 @export var mirror_vertical: bool = false
 
+## Target width (pixels) to scale the frame buffer to after rotation and mirroring.
+## Set to 0 (default) to disable scaling. Both scale_width and scale_height must be
+## non-zero for scaling to take effect.
+@export var scale_width: int = FeedRequest.DEFAULT_SCALE_WIDTH
+
+## Target height (pixels) to scale the frame buffer to after rotation and mirroring.
+## Set to 0 (default) to disable scaling. Both scale_width and scale_height must be
+## non-zero for scaling to take effect.
+@export var scale_height: int = FeedRequest.DEFAULT_SCALE_HEIGHT
+
 var _plugin_singleton: Object
 
 
@@ -104,6 +114,8 @@ func create_feed_request() -> FeedRequest:
 		. set_grayscale(is_grayscale)
 		. set_mirror_horizontal(mirror_horizontal)
 		. set_mirror_vertical(mirror_vertical)
+		. set_scale_width(scale_width)
+		. set_scale_height(scale_height)
 	)
 
 
