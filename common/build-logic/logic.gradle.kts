@@ -17,18 +17,38 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+val buildLogicDependencies =
+    extensions
+        .getByType<VersionCatalogsExtension>()
+        .named("libs")
+        .run {
+            libraryAliases
+                .filter { it.startsWith("build.logic.") }
+                .map { findLibrary(it).get().get() }
+        }
+
 dependencies {
-    implementation(libs.kotlinx.serialization.json)
+    println("DEBUG: BUILD LOGIC IMPLEMENTATION Dependencies")
+    buildLogicDependencies.forEach {
+        println("DEBUG: Adding to runtime: $it")
+        implementation(it)
+    }
 }
 
 sourceSets {
     main {
-        java.srcDirs("src/main/kotlin")
+        java.srcDirs("src/main/java")
     }
 }
 
 kotlin {
     jvmToolchain(17)
+
+    sourceSets {
+        getByName("main") {
+            kotlin.srcDir("src/main/java")
+        }
+    }
 }
 
 tasks.withType<JavaCompile>().configureEach {

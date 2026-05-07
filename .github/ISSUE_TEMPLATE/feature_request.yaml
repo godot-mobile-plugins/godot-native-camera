@@ -40,6 +40,7 @@ body:
     label: Plugin Version
     description: What version of the plugin are you running?
     options:
+      - "2.0"
       - "1.1"
       - "1.0"
       - Other

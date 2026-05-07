@@ -136,6 +136,91 @@ fun TaskContainerScope.registerIosBuildTask(
                     "Failed to rename ${builtLib.absolutePath} to ${renamedLib.absolutePath}",
                 )
             }
+
+            // Inject ExecOperations using your predefined Injected interface
+            val execOps = project.objects.newInstance<Injected>().execOps
+
+            // -- Dynamically strip SPM dependency objects from the static library --
+            //
+            // xcodebuild archives every compiled SPM package object into the .a via
+            // libtool, even when --no-link is used (that only prevents Frameworks-phase
+            // linking). We enumerate the .a members with `ar -t`, identify the ones
+            // that belong to Firebase / SPM packages (i.e. anything NOT in the plugin's
+            // own src/ directory), and delete them one-by-one with `ar -d`.
+            //
+            // macOS `ar -t` prints one member name per line with no path prefix.
+            // macOS `ar -d` accepts exactly one member name per invocation — passing
+            // multiple names in a single call silently processes only the first.
+            println("Inspecting archive for SPM dependency objects to strip...")
+
+            val listOutput = java.io.ByteArrayOutputStream()
+            execOps.exec {
+                commandLine("xcrun", "ar", "-t", renamedLib.absolutePath)
+                standardOutput = listOutput
+            }
+
+            // `ar -t` gives one bare filename per line, e.g. "FirebaseAuth.o"
+            val allObjects: List<String> =
+                listOutput
+                    .toString("UTF-8")
+                    .lines()
+                    .map { it.trim() }
+                    .filter { it.endsWith(".o") }
+
+            // Build the set of object names that belong to the plugin's own sources.
+            // Each source file compiles to <name>.o in the archive.
+            val pluginSrcDir = file("$projectDir/src")
+            val pluginObjectNames: Set<String> =
+                fileTree(pluginSrcDir) {
+                    include("**/*.mm", "**/*.m", "**/*.swift", "**/*.cpp")
+                }.files.map { it.nameWithoutExtension + ".o" }.toSet()
+
+            // In Release (WMO) builds Xcode merges all Swift sources into a single
+            // object named <scheme>.o. Preserve it unconditionally.
+            val wmoObjectName = "${pluginConfig.pluginModuleName}_plugin.o"
+
+            // Everything not produced by the plugin's own source files is a foreign
+            // SPM dependency that must be stripped.
+            val objectsToStrip: List<String> =
+                allObjects.filter { obj ->
+                    obj !in pluginObjectNames && obj != wmoObjectName
+                }
+
+            if (objectsToStrip.isEmpty()) {
+                println("No SPM dependency objects found — archive is already clean.")
+            } else {
+                println("Stripping ${objectsToStrip.size} SPM object(s) from ${renamedLib.name}:")
+                var strippedCount = 0
+                var failedObjects = mutableListOf<String>()
+
+                // macOS ar -d requires one member per invocation.
+                objectsToStrip.forEach { obj ->
+                    val result =
+                        execOps.exec {
+                            commandLine("xcrun", "ar", "-d", renamedLib.absolutePath, obj)
+                            isIgnoreExitValue = true
+                        }
+                    if (result.exitValue == 0) {
+                        println("  Stripped: $obj")
+                        strippedCount++
+                    } else {
+                        // Member may be absent in some build variants — not fatal.
+                        logger.debug("  $obj not present in ${renamedLib.name} (skipped)")
+                        failedObjects.add(obj)
+                    }
+                }
+
+                if (failedObjects.isNotEmpty()) {
+                    logger.warn(
+                        "Warning: {} object(s) could not be stripped: {}. " +
+                            "Verify with: xcrun ar -t {}",
+                        failedObjects.size,
+                        failedObjects,
+                        renamedLib.absolutePath,
+                    )
+                }
+                println("Stripped $strippedCount/${objectsToStrip.size} SPM object(s) from ${renamedLib.name}")
+            }
             println("iOS build completed at: ${buildTimestamp()}")
         }
     }
@@ -183,6 +268,12 @@ fun TaskContainerScope.registerIosTestTask(
         }
 
         doFirst {
+            // Delete the existing result bundle to avoid xcodebuild errors
+            val resultBundle = testResultsDir.resolve("$name.xcresult")
+            if (resultBundle.exists()) {
+                resultBundle.deleteRecursively()
+            }
+
             testResultsDir.mkdirs()
 
             // Try pulling from Gradle extra properties first (set by bootiOSSimulator), then fallback to env
@@ -214,7 +305,7 @@ fun TaskContainerScope.registerIosTestTask(
                 "-derivedDataPath",
                 derivedDataDir.absolutePath,
                 "-resultBundlePath",
-                testResultsDir.resolve("$name.xcresult").absolutePath,
+                resultBundle.absolutePath,
                 "-enableCodeCoverage",
                 "YES",
                 "GODOT_DIR=$godotDir",
@@ -353,10 +444,11 @@ tasks {
 
         val godotDirectory = file(godotDir)
         val versionFile = godotDirectory.resolve("GODOT_VERSION")
-        val filename = "godot-headers-${godotConfig.godotVersion}-${godotConfig.godotReleaseType}.zip"
+        val expectedVersionString = "${godotConfig.godotVersion}-${godotConfig.godotReleaseType}"
+        val filename = "godot-headers-$expectedVersionString.zip"
         val releaseUrl =
             "https://github.com/godot-mobile-plugins/godot-headers/releases/download/" +
-                "${godotConfig.godotVersion}-${godotConfig.godotReleaseType}/$filename"
+                "$expectedVersionString/$filename"
         val archiveFile = file("$godotDir.zip")
 
         inputs.property("godotVersion", godotConfig.godotVersion)
@@ -364,10 +456,10 @@ tasks {
         inputs.property("godotDir", godotDir)
 
         onlyIf {
-            if (versionFile.exists() && versionFile.readText().trim() == godotConfig.godotVersion) {
+            if (versionFile.exists() && versionFile.readText().trim() == expectedVersionString) {
                 logger.info(
                     "Godot {} already present in {}. Skipping download.",
-                    godotConfig.godotVersion,
+                    expectedVersionString,
                     godotDirectory.absolutePath,
                 )
                 return@onlyIf false
@@ -387,9 +479,9 @@ tasks {
                 throw GradleException(
                     "ERROR: Godot directory '${godotDirectory.absolutePath}' already exists but " +
                         "contains version '$existingVersion', which does not match the " +
-                        "configured version '${godotConfig.godotVersion}'. " +
+                        "configured version '$expectedVersionString'. " +
                         "Remove the directory (or run 'removeGodotDirectory') before downloading again, " +
-                        "or update 'godotVersion' in config/godot.properties.",
+                        "or update 'godotVersion' or 'godotReleaseType' in config/godot.properties.",
                 )
             }
         }
@@ -408,10 +500,10 @@ tasks {
             }
 
             archiveFile.delete()
-            versionFile.writeText(godotConfig.godotVersion)
+            versionFile.writeText(expectedVersionString)
 
             println(
-                "Godot headers ${godotConfig.godotVersion}-${godotConfig.godotReleaseType} successfully " +
+                "Godot headers $expectedVersionString successfully " +
                     "downloaded and extracted to ${godotDirectory.absolutePath}",
             )
         }
@@ -497,13 +589,33 @@ tasks {
                 println("Warning: No dependencies found for plugin. Skipping SPM dependency removal.")
             } else {
                 println("Removing SPM dependencies from project...")
+                val moduleName = "${pluginConfig.pluginModuleName}_plugin"
+                val testTargetName = "${pluginConfig.pluginModuleName}_plugin_tests"
+
                 deps.forEach { dep ->
                     dep.products.forEach { product ->
+                        // Remove from module target
                         execOps.exec {
                             commandLine(
                                 "ruby",
                                 "$scriptDir/spm_manager.rb",
                                 "-d",
+                                "--target",
+                                moduleName,
+                                xcodeproj,
+                                dep.url,
+                                dep.version,
+                                product,
+                            )
+                        }
+                        // Remove from test target
+                        execOps.exec {
+                            commandLine(
+                                "ruby",
+                                "$scriptDir/spm_manager.rb",
+                                "-d",
+                                "--target",
+                                testTargetName,
                                 xcodeproj,
                                 dep.url,
                                 dep.version,
@@ -595,14 +707,28 @@ tasks {
             val xcodeproj = "$projectDir/plugin.xcodeproj"
             val scriptDir = file("$repositoryRootDir/script")
 
+            // -- Module target: compile-only (--no-link) ----------------------
+            // Firebase frameworks must be in packageProductDependencies so the
+            // Swift compiler can resolve their modules (Authentication.swift,
+            // AuthProviding.swift etc. import them).  However they must NOT be
+            // linked into FirebasePlugin.a — the consuming Godot app links them
+            // independently, and duplicate symbols would cause export failure.
+            val moduleName = "${pluginConfig.pluginModuleName}_plugin"
+            val testTargetName = "${pluginConfig.pluginModuleName}_plugin_tests"
+
             println("Updating Xcode project with SPM dependencies...")
+            println("  - Module target '$moduleName' (compile-only, not linked):")
             deps.forEach { dep ->
                 dep.products.forEach { product ->
+                    println("      • $product")
                     execOps.exec {
                         commandLine(
                             "ruby",
                             "$scriptDir/spm_manager.rb",
                             "-a",
+                            "--target",
+                            moduleName,
+                            "--no-link",
                             xcodeproj,
                             dep.url,
                             dep.version,
@@ -611,6 +737,33 @@ tasks {
                     }
                 }
             }
+
+            // -- Test target: compile + link (normal) --------------------------
+            // The test target compiles Swift files directly (not via the .a) and
+            // must link Firebase frameworks itself.
+            val spmTestConfigFile = file("$projectDir/config/spm_test_dependencies.json")
+            val testDeps = if (spmTestConfigFile.exists()) readSpmDependencies(spmTestConfigFile) else deps
+
+            println("  - Test target '$testTargetName' (compile + link):")
+            testDeps.forEach { dep ->
+                dep.products.forEach { product ->
+                    println("      • $product")
+                    execOps.exec {
+                        commandLine(
+                            "ruby",
+                            "$scriptDir/spm_manager.rb",
+                            "-a",
+                            "--target",
+                            testTargetName,
+                            xcodeproj,
+                            dep.url,
+                            dep.version,
+                            product,
+                        )
+                    }
+                }
+            }
+
             println("SPM update completed.")
         }
     }
@@ -624,6 +777,7 @@ tasks {
         val xcodeproj = "$projectDir/plugin.xcodeproj"
 
         inputs.file("$projectDir/config/spm_dependencies.json")
+        inputs.file("$projectDir/config/spm_test_dependencies.json")
         inputs.files(fileTree(xcodeproj) { include("**/*.pbxproj", "**/project.pbxproj") })
 
         outputs.file("$xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved")
@@ -698,17 +852,20 @@ tasks {
     }
 
     register("validateGodotVersion") {
-        description = "Validates that the Godot version in godotDir matches the configured godotVersion"
+        description = "Validates that the Godot version in godotDir matches the configured godotVersion and releaseType"
         group = "verification"
 
         dependsOn("downloadGodotHeaders")
 
+        val expectedVersionString = "${godotConfig.godotVersion}-${godotConfig.godotReleaseType}"
+
         inputs.property("godotVersion", godotConfig.godotVersion)
+        inputs.property("godotReleaseType", godotConfig.godotReleaseType)
         inputs.property("godotDirPath", godotDir)
 
         outputs.upToDateWhen {
             val vf = java.io.File("$godotDir/GODOT_VERSION")
-            vf.exists() && vf.readText().trim() == godotConfig.godotVersion
+            vf.exists() && vf.readText().trim() == expectedVersionString
         }
 
         doLast {
@@ -722,16 +879,16 @@ tasks {
             }
 
             val downloadedVersion = versionFile.readText().trim()
-            if (downloadedVersion != godotConfig.godotVersion) {
+            if (downloadedVersion != expectedVersionString) {
                 throw GradleException(
                     "Godot version mismatch!\n" +
-                        "  Expected (config/godot.properties): ${godotConfig.godotVersion}\n" +
+                        "  Expected (config/godot.properties): $expectedVersionString\n" +
                         "  Found    (${versionFile.absolutePath}): $downloadedVersion\n" +
                         "Ensure they match, or run 'removeGodotDirectory' then 'downloadGodotHeaders'.",
                 )
             }
 
-            logger.lifecycle("Godot version validation passed: {}", godotConfig.godotVersion)
+            logger.lifecycle("Godot version validation passed: {}", expectedVersionString)
         }
     }
 

@@ -101,14 +101,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		07964BC82F8F1CF100C0CAC1 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				0721C6C02F82639B00A9BA75 /* XCTest.framework */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		07A6C6792F8F73FE00F484DA /* fixtures */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,7 +170,6 @@
 				07DF21702F3EE0E500E2725C /* src */,
 				90CAAA9524E71FF10013969F /* Products */,
 				90CAAAA824E72A8A0013969F /* Frameworks */,
-				07964BC82F8F1CF100C0CAC1 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -194,6 +185,7 @@
 		90CAAAA824E72A8A0013969F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0721C6C02F82639B00A9BA75 /* XCTest.framework */,
 				072C41E02F8F2AA200BA4867 /* AVFoundation.framework */,
 			);
 			name = Frameworks;
