@@ -10,6 +10,7 @@ extends Node
 @onready var cameras_option_button: OptionButton = %CamerasOB
 @onready var rotation_slider: HSlider = %RotationHBC/RotationHSlider
 @onready var rotation_label: Label = %RotationHBC/ValueLabel
+@onready var auto_upright_cb: CheckButton = %AutoUprightCB
 @onready var grayscale_check_button: CheckButton = %GrayscaleCB
 @onready var horizontal_mirror_cb: CheckButton = %HorizontalMirrorCB
 @onready var vertical_mirror_cb: CheckButton = %VerticalMirrorCB
@@ -97,6 +98,7 @@ func _on_start_button_pressed() -> void:
 			. set_camera_id(__camera_id)
 			. set_frames_to_skip(int(frame_skip_slider.value))
 			. set_rotation(int(rotation_slider.value))
+			. set_auto_upright(auto_upright_cb.button_pressed)
 			. set_grayscale(grayscale_check_button.button_pressed)
 			. set_mirror_horizontal(horizontal_mirror_cb.button_pressed)
 			. set_mirror_vertical(vertical_mirror_cb.button_pressed)

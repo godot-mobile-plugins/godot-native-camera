@@ -21,6 +21,7 @@ static String const kMirrorHorizontalProperty = "mirror_horizontal";
 static String const kMirrorVerticalProperty = "mirror_vertical";
 static String const kScaleWidthProperty = "scale_width";
 static String const kScaleHeightProperty = "scale_height";
+static String const kAutoUprightProperty = "auto_upright";
 
 - (instancetype)initWithRawData:(void *)data {
 	self = [super init];
@@ -72,6 +73,10 @@ static String const kScaleHeightProperty = "scale_height";
 - (NSInteger)scaleHeight {
 	return self.rawData.has(kScaleHeightProperty) ? (NSInteger)self.rawData[kScaleHeightProperty].operator int64_t()
 												  : 0;
+}
+
+- (BOOL)isAutoUpright {
+	return self.rawData.has(kAutoUprightProperty) ? (BOOL)self.rawData[kAutoUprightProperty] : NO;
 }
 
 @end

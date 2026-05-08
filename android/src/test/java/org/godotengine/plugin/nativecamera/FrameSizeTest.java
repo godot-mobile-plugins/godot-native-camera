@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class FrameSizeTest {
 
-	// ── helper ────────────────────────────────────────────────────────────
+	// -- helper ------------------------------------------------------------
 
 	private static Size size(int w, int h) {
 		Size s = mock(Size.class);
@@ -36,7 +36,7 @@ public class FrameSizeTest {
 		return s;
 	}
 
-	// ── normal resolutions ────────────────────────────────────────────────
+	// -- normal resolutions ------------------------------------------------
 
 	@Test
 	public void buildRawData_1920x1080_widthCorrect() {
@@ -62,7 +62,7 @@ public class FrameSizeTest {
 		assertEquals(480, d.get("height"));
 	}
 
-	// ── edge cases ────────────────────────────────────────────────────────
+	// -- edge cases --------------------------------------------------------
 
 	@Test
 	public void buildRawData_squareFrame_sameWidthAndHeight() {
@@ -77,7 +77,7 @@ public class FrameSizeTest {
 		assertEquals(1, d.get("height"));
 	}
 
-	// ── key completeness ─────────────────────────────────────────────────
+	// -- key completeness -------------------------------------------------
 
 	@Test
 	public void buildRawData_containsWidthKey() {
@@ -94,7 +94,7 @@ public class FrameSizeTest {
 		assertEquals(2, new FrameSize(size(100, 200)).buildRawData().size());
 	}
 
-	// ── successive calls ─────────────────────────────────────────────────
+	// -- successive calls -------------------------------------------------
 
 	@Test
 	public void buildRawData_calledTwice_returnsDifferentInstances() {

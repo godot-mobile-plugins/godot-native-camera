@@ -318,6 +318,67 @@ public class FeedRequestTest {
 		assertEquals(360, req.getScaleHeight());
 	}
 
+	// ── autoUpright ───────────────────────────────────────────────────────
+
+	@Test
+	public void isAutoUpright_falseInFullDict() {
+		// fullDict() explicitly sets auto_upright = false
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.fullDict());
+		assertFalse(req.isAutoUpright());
+	}
+
+	@Test
+	public void isAutoUpright_trueInAutoUprightDict() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.autoUprightDict());
+		assertTrue(req.isAutoUpright());
+	}
+
+	@Test
+	public void isAutoUpright_missingKey_defaultsFalse() {
+		// Missing key must default to false — auto_upright is opt-in.
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.emptyDict());
+		assertFalse(req.isAutoUpright());
+	}
+
+	@Test
+	public void isAutoUpright_minimalDict_defaultsFalse() {
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.minimalDict());
+		assertFalse(req.isAutoUpright());
+	}
+
+	@Test
+	public void isAutoUpright_frontCameraAutoUprightDict_trueAndCorrectCameraId() {
+		// Verify that auto_upright and camera_id are independent fields.
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.frontCameraAutoUprightDict());
+		assertTrue(req.isAutoUpright());
+		assertEquals("1", req.getCameraId());
+	}
+
+	@Test
+	public void isAutoUpright_explicitFalseInDict_returnsFalse() {
+		// Explicit false must not be treated as missing.
+		Dictionary d = new Dictionary();
+		d.put("auto_upright", false);
+		FeedRequest req = new FeedRequest(d);
+		assertFalse(req.isAutoUpright());
+	}
+
+	@Test
+	public void isAutoUpright_explicitTrueInDict_returnsTrue() {
+		Dictionary d = new Dictionary();
+		d.put("auto_upright", true);
+		FeedRequest req = new FeedRequest(d);
+		assertTrue(req.isAutoUpright());
+	}
+
+	@Test
+	public void isAutoUpright_doesNotAffectRotationGetter() {
+		// Enabling auto_upright must leave the stored rotation value untouched;
+		// the plugin (not FeedRequest) decides which rotation to apply at runtime.
+		FeedRequest req = new FeedRequest(FeedRequestFixtures.autoUprightDict());
+		assertEquals(90, req.getRotation()); // fullDict rotation is 90
+	}
+
 	// ── type coercion (Long -> int) ───────────────────────────────────────
 
 	@Test

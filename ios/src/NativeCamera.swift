@@ -28,6 +28,27 @@ import UIKit
 	private var frameRequest: FrameRequest?
 	private var frameCounter: Int = 0
 
+	/// True when the active capture device is the front-facing camera.
+	/// Written on sessionQueue (inside start's async block, before capture begins),
+	/// read on sessionQueue (from captureOutput) — same queue, no data race.
+	///
+	/// `internal` rather than `private` so that unit tests can inject values
+	/// directly and exercise `computeUprightRotation()` without requiring real
+	/// hardware or a running capture session.
+	var isFrontFacingCamera: Bool = false
+
+	/// Most recently observed device orientation, kept in sync by a UIDevice
+	/// orientation-change notification observer running on the main thread.
+	/// captureOutput reads this from sessionQueue; the worst case is a single
+	/// frame using a slightly stale value when the device is mid-rotation —
+	/// imperceptible in practice and preferable to an expensive cross-queue sync.
+	/// Initialised to .portrait so the first frame is always valid even if
+	/// beginGeneratingDeviceOrientationNotifications has not yet fired.
+	///
+	/// `internal` rather than `private` so that unit tests can inject specific
+	/// orientations and exercise `computeUprightRotation()` in isolation.
+	var deviceOrientation: UIDeviceOrientation = .portrait
+
 	@objc public static func hasPermission() -> Bool {
 		return AVCaptureDevice.authorizationStatus(for: .video) == .authorized
 	}
@@ -57,6 +78,22 @@ import UIKit
 	}
 
 	@objc public func start(request: FrameRequest) {
+		// UIDevice orientation tracking must be started on the main thread.
+		// The notification fires on the main thread too, keeping deviceOrientation
+		// updated independently of the capture pipeline.
+		DispatchQueue.main.async { [weak self] in
+			guard let self else { return }
+			UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+			// Seed the cached value immediately so the first frame is correct.
+			self.deviceOrientation = UIDevice.current.orientation
+			NotificationCenter.default.addObserver(
+				self,
+				selector: #selector(self.orientationDidChange),
+				name: UIDevice.orientationDidChangeNotification,
+				object: nil
+			)
+		}
+
 		// Dispatch everything onto sessionQueue so stop() fully completes
 		// before we reconfigure, AND so variable writes are on the same
 		// queue that captureOutput reads them from — no data race.
@@ -74,6 +111,10 @@ import UIKit
 
 			guard let device = AVCaptureDevice(uniqueID: request.cameraId()),
 				let input = try? AVCaptureDeviceInput(device: device) else { return }
+
+			// Cache the lens position so computeUprightRotation() can apply the
+			// correct formula without touching the device object on every frame.
+			self.isFrontFacingCamera = (device.position == .front)
 
 			if session.canAddInput(input) { session.addInput(input) }
 
@@ -99,6 +140,69 @@ import UIKit
 			self.captureSession?.stopRunning()
 			self.captureSession = nil
 			self.videoOutput = nil
+		}
+
+		// Mirror the main-thread setup from start().
+		DispatchQueue.main.async { [weak self] in
+			guard let self else { return }
+			NotificationCenter.default.removeObserver(
+				self,
+				name: UIDevice.orientationDidChangeNotification,
+				object: nil
+			)
+			UIDevice.current.endGeneratingDeviceOrientationNotifications()
+		}
+	}
+
+	/// Called on the main thread whenever the device physical orientation changes.
+	/// Updates the cached ``deviceOrientation`` used by ``computeUprightRotation()``.
+	@objc private func orientationDidChange() {
+		deviceOrientation = UIDevice.current.orientation
+	}
+
+	/// Computes the clockwise rotation in degrees needed to produce an upright
+	/// frame for the current camera and the cached device orientation.
+	///
+	/// ## iOS orientation → rotation mapping
+	///
+	/// The raw BGRA buffer from `AVCaptureVideoDataOutput` is always in sensor
+	/// (landscape) space.  The table below shows the rotation that brings it
+	/// upright for each `UIDeviceOrientation`:
+	///
+	/// | Device orientation    | Back camera | Front camera |
+	/// |-----------------------|-------------|--------------|
+	/// | portrait              | 90°         | 90°          |
+	/// | portraitUpsideDown    | 270°        | 270°         |
+	/// | landscapeLeft¹        | 0°          | 180°         |
+	/// | landscapeRight²       | 180°        | 0°           |
+	/// | faceUp / faceDown / unknown | 90° (portrait fallback) |
+	///
+	/// ¹ `landscapeLeft` — device top points left, home button on the right.
+	/// ² `landscapeRight` — device top points right, home button on the left.
+	///
+	/// Front and back cameras mirror each other in the landscape cases because
+	/// the front sensor image is horizontally flipped relative to the back sensor.
+	///
+	/// - Note: Must only be called from `sessionQueue` to guarantee consistent
+	///   access to `isFrontFacingCamera`.  `deviceOrientation` is read without a
+	///   lock; see its declaration for the rationale.
+	internal func computeUprightRotation() -> Int {
+		switch deviceOrientation {
+		case .portrait:
+			return 90
+		case .portraitUpsideDown:
+			return 270
+		case .landscapeLeft:
+			// Device top points left (home button right) — sensor is already
+			// aligned for the back camera; mirrored for the front camera.
+			return isFrontFacingCamera ? 180 : 0
+		case .landscapeRight:
+			// Device top points right (home button left) — sensor is inverted
+			// for the back camera; already aligned for the front camera.
+			return isFrontFacingCamera ? 0 : 180
+		default:
+			// .faceUp, .faceDown, .unknown — fall back to portrait assumption.
+			return 90
 		}
 	}
 
@@ -144,8 +248,13 @@ import UIKit
 			outputData = Data(rgbaBytes)
 		}
 
+		// When auto_upright is enabled, derive the required rotation from the
+		// camera sensor orientation and the live device orientation instead of
+		// using the fixed value set by the caller.
+		let effectiveRotation: Int = req.isAutoUpright() ? computeUprightRotation() : req.rotation()
+
 		// Handle Rotation
-		let rotated = rotateData(outputData, w: width, h: height, degrees: req.rotation(), gray: req.isGrayscale())
+		let rotated = rotateData(outputData, w: width, h: height, degrees: effectiveRotation, gray: req.isGrayscale())
 
 		// Handle Mirror (applied after rotation, same as Android)
 		let mirrored = mirrorData(rotated.data, w: rotated.w, h: rotated.h,
@@ -165,7 +274,7 @@ import UIKit
 				buffer: final.data,
 				width: final.w,
 				height: final.h,
-				rotation: req.rotation(),
+				rotation: effectiveRotation,
 				isGrayscale: req.isGrayscale()
 			)
 			self.onFrameAvailable?(info)

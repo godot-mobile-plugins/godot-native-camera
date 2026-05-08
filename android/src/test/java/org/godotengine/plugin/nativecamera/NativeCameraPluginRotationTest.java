@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 public class NativeCameraPluginRotationTest {
 
-	// ── Reflection accessors ─────────────────────────────────────────────
+	// -- Reflection accessors ---------------------------------------------
 
 	/** Mirror of the inner RotationResult returned by the plugin. */
 	private static class RotationResult {
@@ -58,9 +58,9 @@ public class NativeCameraPluginRotationTest {
 		return r;
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateRGBA – rotation = 0
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateRGBA_0degrees_returnsSameBuffer() throws Exception {
@@ -94,9 +94,9 @@ public class NativeCameraPluginRotationTest {
 		assertEquals(r270.height, rMinus.height);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateRGBA – rotation = 90
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateRGBA_90degrees_swapsDimensions() throws Exception {
@@ -132,9 +132,9 @@ public class NativeCameraPluginRotationTest {
 		assertEquals((byte) 0, r.buffer[8 + 1]); // G = original col = 0
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateRGBA – rotation = 180
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateRGBA_180degrees_dimensionsUnchanged() throws Exception {
@@ -151,9 +151,9 @@ public class NativeCameraPluginRotationTest {
 		assertArrayEquals(src, r2.buffer);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateRGBA – rotation = 270
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateRGBA_270degrees_swapsDimensions() throws Exception {
@@ -193,9 +193,9 @@ public class NativeCameraPluginRotationTest {
 		assertArrayEquals(src, current);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateGray – rotation = 0
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateGray_0degrees_returnsSameBuffer() throws Exception {
@@ -211,9 +211,9 @@ public class NativeCameraPluginRotationTest {
 		assertEquals(2, r.height);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateGray – rotation = 90
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateGray_90degrees_swapsDimensions() throws Exception {
@@ -255,9 +255,9 @@ public class NativeCameraPluginRotationTest {
 		assertEquals((byte) 20, r.buffer[0]);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateGray – rotation = 180
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateGray_180degrees_dimensionsUnchanged() throws Exception {
@@ -274,9 +274,9 @@ public class NativeCameraPluginRotationTest {
 		assertArrayEquals(src, r2.buffer);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  rotateGray – rotation = 270
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void rotateGray_270degrees_swapsDimensions() throws Exception {

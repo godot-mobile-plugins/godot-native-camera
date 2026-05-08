@@ -4,7 +4,7 @@
 
 AllCops:
   TargetRubyVersion: 3.2
-  NewCops: pending
+  NewCops: enable
   Exclude:
     - 'vendor/**/*'
 
@@ -31,9 +31,6 @@ Style/FrozenStringLiteralComment:
 
 Style/Documentation:
   Enabled: false
-
-  AllCops:
-    NewCops: enable
 Gemspec/AddRuntimeDependency: # new in 1.65
   Enabled: true
 Gemspec/AttributeAssignment: # new in 1.77

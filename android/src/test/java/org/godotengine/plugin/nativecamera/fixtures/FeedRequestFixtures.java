@@ -29,6 +29,7 @@ public final class FeedRequestFixtures {
 		d.put("mirror_vertical", false);
 		d.put("scale_width", 0L);
 		d.put("scale_height", 0L);
+		d.put("auto_upright", false);
 		return d;
 	}
 
@@ -142,6 +143,28 @@ public final class FeedRequestFixtures {
 		Dictionary d = fullDict();
 		d.put("scale_width", 1280L);
 		d.put("scale_height", 720L);
+		return d;
+	}
+
+	// ── auto_upright variants ──────────────────────────────────────────────
+
+	/**
+	 * auto_upright = true; the plugin will compute the needed rotation from
+	 * sensor orientation and live device orientation rather than using the
+	 * fixed {@code rotation} field.
+	 */
+	public static Dictionary autoUprightDict() {
+		Dictionary d = fullDict();
+		d.put("auto_upright", true);
+		return d;
+	}
+
+	/**
+	 * auto_upright = true for a front-facing camera (id = "1").
+	 */
+	public static Dictionary frontCameraAutoUprightDict() {
+		Dictionary d = autoUprightDict();
+		d.put("camera_id", "1");
 		return d;
 	}
 }

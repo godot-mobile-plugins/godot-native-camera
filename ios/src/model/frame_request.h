@@ -41,6 +41,14 @@
  */
 - (NSInteger)scaleHeight;
 
+/**
+ * When YES, the plugin automatically computes the rotation needed to produce
+ * an upright image by combining the camera sensor orientation with the live
+ * device orientation reported by UIDevice.  The manual @c rotation field is
+ * ignored while this flag is active.  Defaults to NO.
+ */
+- (BOOL)isAutoUpright;
+
 @end
 
 #endif /* frame_request_h */

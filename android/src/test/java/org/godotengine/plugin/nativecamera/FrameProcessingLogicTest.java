@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 public class FrameProcessingLogicTest {
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  Frame-skip divisor calculation
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void divisor_framesToSkip0_divisorIs1() {
@@ -55,9 +55,9 @@ public class FrameProcessingLogicTest {
 		assertEquals(5, framesToSkipDivisor(4));
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  Frame-skip counting (which frames are actually processed)
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void frameSkip_divisor1_everyFrameIsProcessed() {
@@ -104,9 +104,9 @@ public class FrameProcessingLogicTest {
 		assertEquals(1, firstProcessedFrameIndex(divisor));
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  Buffer size calculation
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void bufferSize_rgba_1x1() {
@@ -140,10 +140,10 @@ public class FrameProcessingLogicTest {
 		assertEquals(rgbaBufferSize(w, h), grayBufferSize(w, h) * 4);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  Buffer reuse: a new allocation is only needed when the required size
 	//  changes (mirrors the null-check / size-check in onImageAvailable)
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void bufferReuse_sameSize_noReallocation() {
@@ -176,9 +176,9 @@ public class FrameProcessingLogicTest {
 		assertEquals(4, result.length);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  Scale guard: enabled only when both dimensions are > 0
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void scaleGuard_bothZero_scalingDisabled() {
@@ -207,9 +207,9 @@ public class FrameProcessingLogicTest {
 		assertScalingEnabled(640, 480, 640, 480, true);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  scaleRGBA – buffer length and pixel-position correctness
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void scaleRGBA_outputLengthIsCorrect() {
@@ -274,9 +274,9 @@ public class FrameProcessingLogicTest {
 		}
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  scaleGray – buffer length and pixel-position correctness
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void scaleGray_outputLengthIsCorrect() {
@@ -326,9 +326,9 @@ public class FrameProcessingLogicTest {
 		}
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  Scale + grayscale buffer size relationship
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	@Test
 	public void scaledGrayBuffer_isFourTimesSmaller_thanScaledRgbaBuffer() {
@@ -343,9 +343,9 @@ public class FrameProcessingLogicTest {
 		assertEquals(dstRgba.length, dstGray.length * 4);
 	}
 
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 	//  Pure-Java helpers that mirror the plugin's inline formulas
-	// ─────────────────────────────────────────────────────────────────────
+	// ---------------------------------------------------------------------
 
 	private static int framesToSkipDivisor(int framesToSkip) {
 		return framesToSkip + 1;

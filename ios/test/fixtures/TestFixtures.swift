@@ -167,10 +167,13 @@ enum FrameRequestFixture {
 	static let isGrayscaleKey  = "is_grayscale"
 	static let scaleWidthKey   = "scale_width"
 	static let scaleHeightKey  = "scale_height"
+	/// Key for the auto_upright flag (mirrors the ObjC `kAutoUprightProperty` constant).
+	static let autoUprightKey  = "auto_upright"
 
 	static let sampleCameraId = "com.apple.avfoundation.avcapturedevice.built-in_video:0"
+	static let frontCameraId  = "com.apple.avfoundation.avcapturedevice.built-in_video:1"
 
-	/// Fully-populated request parameters (scaling disabled)
+	/// Fully-populated request parameters (scaling disabled, auto_upright disabled).
 	static let fullParams: [String: Any] = [
 		cameraIdKey: sampleCameraId,
 		widthKey: 1280,
@@ -179,15 +182,16 @@ enum FrameRequestFixture {
 		rotationKey: 90,
 		isGrayscaleKey: false,
 		scaleWidthKey: 0,
-		scaleHeightKey: 0
+		scaleHeightKey: 0,
+		autoUprightKey: false
 	]
 
-	/// Minimal request – only camera_id; all other fields should fall back to defaults
+	/// Minimal request – only camera_id; all other fields should fall back to defaults.
 	static let minimalParams: [String: Any] = [
 		cameraIdKey: sampleCameraId
 	]
 
-	/// Request with scaling to half the capture resolution (640×360 from 1280×720)
+	/// Request with scaling to half the capture resolution (640×360 from 1280×720).
 	static let scaledParams: [String: Any] = [
 		cameraIdKey: sampleCameraId,
 		widthKey: 1280,
@@ -211,7 +215,34 @@ enum FrameRequestFixture {
 		scaleHeightKey: 360
 	]
 
-	/// Default values expected when keys are absent
+	/// auto_upright enabled for the default back camera.
+	/// The manual rotation field is present but must be ignored by the plugin.
+	static let autoUprightParams: [String: Any] = [
+		cameraIdKey: sampleCameraId,
+		widthKey: 1280,
+		heightKey: 720,
+		framesToSkipKey: 0,
+		rotationKey: 90,      // present but ignored when auto_upright = true
+		isGrayscaleKey: false,
+		scaleWidthKey: 0,
+		scaleHeightKey: 0,
+		autoUprightKey: true
+	]
+
+	/// auto_upright enabled for the front-facing camera (id = frontCameraId).
+	static let autoUprightFrontCameraParams: [String: Any] = [
+		cameraIdKey: frontCameraId,
+		widthKey: 1280,
+		heightKey: 720,
+		framesToSkipKey: 0,
+		rotationKey: 90,      // present but ignored when auto_upright = true
+		isGrayscaleKey: false,
+		scaleWidthKey: 0,
+		scaleHeightKey: 0,
+		autoUprightKey: true
+	]
+
+	/// Default values expected when keys are absent.
 	enum Defaults {
 		static let width        = 640
 		static let height       = 480
@@ -220,5 +251,6 @@ enum FrameRequestFixture {
 		static let isGrayscale  = false
 		static let scaleWidth   = 0
 		static let scaleHeight  = 0
+		static let autoUpright  = false
 	}
 }

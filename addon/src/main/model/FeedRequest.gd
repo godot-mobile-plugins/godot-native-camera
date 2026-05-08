@@ -14,6 +14,7 @@ const DATA_MIRROR_HORIZONTAL_PROPERTY := &"mirror_horizontal"
 const DATA_MIRROR_VERTICAL_PROPERTY := &"mirror_vertical"
 const DATA_SCALE_WIDTH_PROPERTY := &"scale_width"
 const DATA_SCALE_HEIGHT_PROPERTY := &"scale_height"
+const DATA_AUTO_UPRIGHT_PROPERTY := &"auto_upright"
 
 const DEFAULT_WIDTH: int = 1280
 const DEFAULT_HEIGHT: int = 720
@@ -23,6 +24,10 @@ const DEFAULT_ROTATION: int = 90
 ## Both scale_width and scale_height must be non-zero for scaling to take effect.
 const DEFAULT_SCALE_WIDTH: int = 0
 const DEFAULT_SCALE_HEIGHT: int = 0
+## When true the plugin automatically corrects the frame orientation based on
+## the camera sensor and the live device orientation. The manual [code]rotation[/code]
+## field is ignored while this flag is active.
+const DEFAULT_AUTO_UPRIGHT: bool = false
 
 const DEFAULT_DATA: Dictionary = {
 	DATA_WIDTH_PROPERTY: DEFAULT_WIDTH,
@@ -33,7 +38,8 @@ const DEFAULT_DATA: Dictionary = {
 	DATA_MIRROR_HORIZONTAL_PROPERTY: false,
 	DATA_MIRROR_VERTICAL_PROPERTY: false,
 	DATA_SCALE_WIDTH_PROPERTY: DEFAULT_SCALE_WIDTH,
-	DATA_SCALE_HEIGHT_PROPERTY: DEFAULT_SCALE_HEIGHT
+	DATA_SCALE_HEIGHT_PROPERTY: DEFAULT_SCALE_HEIGHT,
+	DATA_AUTO_UPRIGHT_PROPERTY: DEFAULT_AUTO_UPRIGHT,
 }
 
 var _data: Dictionary
@@ -96,6 +102,15 @@ func set_scale_width(a_value: int) -> FeedRequest:
 ## Both scale_width and scale_height must be non-zero for scaling to take effect.
 func set_scale_height(a_value: int) -> FeedRequest:
 	_data[DATA_SCALE_HEIGHT_PROPERTY] = a_value
+	return self
+
+
+## When enabled the plugin automatically computes the rotation required to
+## produce an upright image by combining the camera sensor orientation with the
+## live device orientation. The manual [code]rotation[/code] value is ignored
+## while this flag is active. Defaults to [code]false[/code].
+func set_auto_upright(a_value: bool) -> FeedRequest:
+	_data[DATA_AUTO_UPRIGHT_PROPERTY] = a_value
 	return self
 
 

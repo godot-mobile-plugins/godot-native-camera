@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class FrameInfoTest {
 
-	// ── buffer ────────────────────────────────────────────────────────────
+	// -- buffer ------------------------------------------------------------
 
 	@Test
 	public void buildRawData_bufferMatchesInput() {
@@ -44,7 +44,7 @@ public class FrameInfoTest {
 		assertEquals(0, returned.length);
 	}
 
-	// ── width / height ────────────────────────────────────────────────────
+	// -- width / height ----------------------------------------------------
 
 	@Test
 	public void buildRawData_widthAndHeightRoundTrip() {
@@ -63,7 +63,7 @@ public class FrameInfoTest {
 		assertEquals(640, d.get("height"));
 	}
 
-	// ── rotation ─────────────────────────────────────────────────────────
+	// -- rotation ---------------------------------------------------------
 
 	@Test
 	public void buildRawData_rotationZeroStoredCorrectly() {
@@ -89,7 +89,7 @@ public class FrameInfoTest {
 		assertEquals(270, info.buildRawData().get("rotation"));
 	}
 
-	// ── isGrayscale ───────────────────────────────────────────────────────
+	// -- isGrayscale -------------------------------------------------------
 
 	@Test
 	public void buildRawData_isGrayscaleFalse() {
@@ -103,7 +103,7 @@ public class FrameInfoTest {
 		assertTrue((Boolean) info.buildRawData().get("is_grayscale"));
 	}
 
-	// ── key completeness ─────────────────────────────────────────────────
+	// -- key completeness -------------------------------------------------
 
 	@Test
 	public void buildRawData_containsAllExpectedKeys() {
@@ -122,7 +122,7 @@ public class FrameInfoTest {
 		assertEquals(5, info.buildRawData().size());
 	}
 
-	// ── independence of successive calls ─────────────────────────────────
+	// -- independence of successive calls ---------------------------------
 
 	@Test
 	public void buildRawData_calledTwice_returnsDifferentDictInstances() {

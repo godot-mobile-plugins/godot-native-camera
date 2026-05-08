@@ -81,7 +81,7 @@ public class NativeCameraPluginTest {
 		plugin.stop(); // ensure any background thread is cleaned up
 	}
 
-	// ── Permission-check helper ───────────────────────────────────────────
+	// -- Permission-check helper -------------------------------------------
 
 	private void grantCameraPermission() {
 		mockedContextCompat.when(() ->
@@ -95,7 +95,7 @@ public class NativeCameraPluginTest {
 				.thenReturn(PackageManager.PERMISSION_DENIED);
 	}
 
-	// ── Plugin metadata ───────────────────────────────────────────────────
+	// -- Plugin metadata ---------------------------------------------------
 
 	@Test
 	public void getPluginName_returnsSimpleClassName() {
@@ -125,7 +125,7 @@ public class NativeCameraPluginTest {
 				.anyMatch(s -> s.getName().equals("frame_available")));
 	}
 
-	// ── has_camera_permission ─────────────────────────────────────────────
+	// -- has_camera_permission ---------------------------------------------
 
 	@Test
 	public void hasCameraPermission_whenDenied_returnsFalse() {
@@ -139,7 +139,7 @@ public class NativeCameraPluginTest {
 		assertTrue(plugin.has_camera_permission());
 	}
 
-	// ── request_camera_permission ─────────────────────────────────────────
+	// -- request_camera_permission -----------------------------------------
 
 	@Test
 	public void requestCameraPermission_whenAlreadyGranted_doesNotCallRequestPermissions() {
@@ -169,7 +169,7 @@ public class NativeCameraPluginTest {
 				times(1));
 	}
 
-	// ── onMainRequestPermissionsResult ────────────────────────────────────
+	// -- onMainRequestPermissionsResult ------------------------------------
 
 	@Test
 	public void onMainRequestPermissionsResult_granted_doesNotThrow() {
@@ -200,7 +200,7 @@ public class NativeCameraPluginTest {
 		plugin.onMainRequestPermissionsResult(1001, new String[]{}, new int[]{});
 	}
 
-	// ── get_all_cameras ───────────────────────────────────────────────────
+	// -- get_all_cameras ---------------------------------------------------
 
 	@Test
 	public void getAllCameras_withoutPermission_returnsEmptyArray() {
@@ -210,7 +210,7 @@ public class NativeCameraPluginTest {
 		assertEquals(0, cameras.length);
 	}
 
-	// ── start / stop state guard ──────────────────────────────────────────
+	// -- start / stop state guard ------------------------------------------
 
 	@Test
 	public void start_withoutPermission_doesNotSetRunningState() throws Exception {

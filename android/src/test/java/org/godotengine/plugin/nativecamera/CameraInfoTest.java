@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CameraInfoTest {
 
-	// ── helpers ───────────────────────────────────────────────────────────
+	// -- helpers -----------------------------------------------------------
 
 	private static Size size(int w, int h) {
 		Size s = mock(Size.class);
@@ -81,7 +81,7 @@ public class CameraInfoTest {
 		return chars;
 	}
 
-	// ── camera_id ─────────────────────────────────────────────────────────
+	// -- camera_id ---------------------------------------------------------
 
 	@Test
 	public void buildRawData_cameraIdBackCamera() {
@@ -97,7 +97,7 @@ public class CameraInfoTest {
 		assertEquals("1", info.buildRawData().get("camera_id"));
 	}
 
-	// ── is_front_facing ───────────────────────────────────────────────────
+	// -- is_front_facing ---------------------------------------------------
 
 	@Test
 	public void buildRawData_backCamera_isFrontFacingFalse() {
@@ -120,7 +120,7 @@ public class CameraInfoTest {
 		assertFalse((Boolean) info.buildRawData().get("is_front_facing"));
 	}
 
-	// ── output_sizes ──────────────────────────────────────────────────────
+	// -- output_sizes ------------------------------------------------------
 
 	@Test
 	public void buildRawData_noOutputSizes_returnsEmptyArray() {
@@ -169,7 +169,7 @@ public class CameraInfoTest {
 		assertEquals(0, result.length);
 	}
 
-	// ── key completeness ─────────────────────────────────────────────────
+	// -- key completeness -------------------------------------------------
 
 	@Test
 	public void buildRawData_containsAllExpectedKeys() {

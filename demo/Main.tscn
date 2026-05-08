@@ -90,8 +90,8 @@ text = "Get Cameras"
 
 [node name="CamerasOB" type="OptionButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=978941571]
 unique_name_in_owner = true
-clip_contents = true
 custom_minimum_size = Vector2(0, 30)
+clip_contents = true
 layout_mode = 2
 autowrap_mode = 1
 fit_to_longest_item = false
@@ -135,6 +135,11 @@ tick_count = 6
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 text = "40"
+
+[node name="AutoUprightCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=1102013437]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Auto-Upright"
 
 [node name="GrayscaleCB" type="CheckButton" parent="CanvasLayer/MainContainer/VBoxContainer/CameraHBC/ButtonsVBC" unique_id=584678802]
 unique_name_in_owner = true

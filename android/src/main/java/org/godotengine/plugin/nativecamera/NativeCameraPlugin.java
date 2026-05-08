@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
@@ -22,6 +23,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -71,6 +74,29 @@ public class NativeCameraPlugin extends GodotPlugin {
 	private volatile int scaleWidth;
 	/** Target height for post-capture scaling; 0 means disabled. */
 	private volatile int scaleHeight;
+
+	/**
+	 * When true, the rotation applied to each frame is computed automatically
+	 * from the camera sensor orientation and the live device orientation instead
+	 * of using the fixed {@link #rotation} value supplied by the caller.
+	 */
+	private volatile boolean autoUpright;
+
+	/**
+	 * Clockwise angle (0 / 90 / 180 / 270) that the camera sensor image must
+	 * be rotated to be upright when the device is in its natural (portrait)
+	 * orientation.  Populated from {@link CameraCharacteristics#SENSOR_ORIENTATION}
+	 * each time {@link #start} is called.
+	 */
+	private volatile int sensorOrientation;
+
+	/**
+	 * True when the active camera is front-facing.  Used by
+	 * {@link #computeUprightRotation()} to mirror-compensate the rotation
+	 * formula for selfie cameras.
+	 */
+	private volatile boolean isFrontFacingCamera;
+
 	private int frameCounter = 0;
 
 	private volatile boolean running = false;
@@ -174,6 +200,7 @@ public class NativeCameraPlugin extends GodotPlugin {
 		mirrorVertical = feedRequest.isMirrorVertical();
 		scaleWidth = feedRequest.getScaleWidth();
 		scaleHeight = feedRequest.getScaleHeight();
+		autoUpright = feedRequest.isAutoUpright();
 		openCamera(feedRequest);
 	}
 
@@ -219,6 +246,21 @@ public class NativeCameraPlugin extends GodotPlugin {
 
 		CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
 		try {
+			// Read sensor orientation and lens facing so that computeUprightRotation()
+			// has the information it needs without touching the (potentially slow)
+			// CameraCharacteristics API on every frame.
+			CameraCharacteristics characteristics = manager.getCameraCharacteristics(request.getCameraId());
+
+			Integer sensorOrientationValue = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+			sensorOrientation = (sensorOrientationValue != null) ? sensorOrientationValue : 0;
+
+			Integer lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
+			isFrontFacingCamera = (lensFacing != null && lensFacing == CameraCharacteristics.LENS_FACING_FRONT);
+
+			Log.d(LOG_TAG, String.format(
+					"openCamera(): sensorOrientation=%d, isFrontFacing=%b, autoUpright=%b",
+					sensorOrientation, isFrontFacingCamera, autoUpright));
+
 			reader = ImageReader.newInstance(request.getWidth(), request.getHeight(), ImageFormat.YUV_420_888, 2);
 			reader.setOnImageAvailableListener(this::onImageAvailable, bgHandler);
 
@@ -226,6 +268,59 @@ public class NativeCameraPlugin extends GodotPlugin {
 		} catch (CameraAccessException | SecurityException e) {
 			Log.e(LOG_TAG, "openCamera(): Failed", e);
 		}
+	}
+
+	/**
+	 * Computes the clockwise rotation (in degrees) required to produce an upright
+	 * image for the currently active camera and the current device orientation.
+	 *
+	 * <p>The algorithm follows the standard Camera2 guidance:
+	 * <ul>
+	 *   <li>Back-facing: {@code (sensorOrientation − deviceDegrees + 360) % 360}</li>
+	 *   <li>Front-facing: {@code (sensorOrientation + deviceDegrees + 360) % 360}<br>
+	 *       The extra compensation accounts for the horizontal mirror inherent to
+	 *       front cameras — the sensor rotation and the device rotation add rather
+	 *       than subtract.</li>
+	 * </ul>
+	 *
+	 * <p>This method is called once per processed frame and is intentionally
+	 * lightweight: the only dynamic read is {@link android.view.Display#getRotation()}.
+	 */
+	private int computeUprightRotation() {
+		Activity activity = getActivity();
+
+		int surfaceRotation;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			android.view.Display display = activity.getDisplay();
+			surfaceRotation = (display != null) ? display.getRotation() : Surface.ROTATION_0;
+		} else {
+			WindowManager wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+			//noinspection deprecation
+			surfaceRotation = wm.getDefaultDisplay().getRotation();
+		}
+
+		int deviceDegrees;
+		switch (surfaceRotation) {
+			case Surface.ROTATION_90:  deviceDegrees = 90;  break;
+			case Surface.ROTATION_180: deviceDegrees = 180; break;
+			case Surface.ROTATION_270: deviceDegrees = 270; break;
+			default:                   deviceDegrees = 0;   break;
+		}
+
+		int uprightRotation;
+		if (isFrontFacingCamera) {
+			// Front cameras are horizontally mirrored: sensor and device rotations add.
+			uprightRotation = (sensorOrientation + deviceDegrees + 360) % 360;
+		} else {
+			// Back cameras: sensor rotation minus device rotation.
+			uprightRotation = (sensorOrientation - deviceDegrees + 360) % 360;
+		}
+
+		Log.v(LOG_TAG, String.format(
+				"computeUprightRotation(): deviceDegrees=%d, sensorOrientation=%d, result=%d",
+				deviceDegrees, sensorOrientation, uprightRotation));
+
+		return uprightRotation;
 	}
 
 	void emitFrame(byte[] buffer, int width, int height, int rotation, boolean isGrayscale) {
@@ -410,12 +505,17 @@ public class NativeCameraPlugin extends GodotPlugin {
 				}
 			}
 
-			if (rotation != 0) {
+			// When auto_upright is enabled, derive the required rotation from the
+			// camera sensor orientation and the live device orientation rather than
+			// using the fixed value set by the caller.
+			int effectiveRotation = autoUpright ? computeUprightRotation() : rotation;
+
+			if (effectiveRotation != 0) {
 				RotationResult result;
 				if (isGrayscale) {
-					result = rotateGray(output, width, height, rotation);
+					result = rotateGray(output, width, height, effectiveRotation);
 				} else {
-					result = rotateRGBA(output, width, height, rotation);
+					result = rotateRGBA(output, width, height, effectiveRotation);
 				}
 
 				output = result.buffer;
@@ -444,7 +544,7 @@ public class NativeCameraPlugin extends GodotPlugin {
 			}
 
 			if (running) {
-				emitFrame(output, width, height, rotation, isGrayscale);
+				emitFrame(output, width, height, effectiveRotation, isGrayscale);
 			}
 
 			image.close();

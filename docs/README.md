@@ -24,6 +24,7 @@ A Godot plugin that provides a **unified camera capture interface** for **Androi
 * Start and stop native camera frame streaming
 * Receive raw frame buffers or ready‑to‑use `Image` objects
 * Configurable resolution, rotation, frame skipping, horizontal/vertical mirroring, grayscale capture, and post-capture scaling
+* **Auto-upright orientation correction** — automatically rotates every frame to be upright as the device is tilted, without any manual rotation tracking in your game code
 * Designed for real‑time use cases (CV, AR preprocessing, custom rendering)
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="20"> Table of Contents
@@ -130,6 +131,46 @@ func _on_frame_available(frame: FrameInfo) -> void:
 	# Use the image or raw buffer here
 ```
 
+### Example with auto-upright
+
+When `auto_upright` is enabled the plugin detects device orientation in real time and automatically applies the correct rotation to every frame. There is no need to set `rotation` manually or track orientation changes in your code.
+
+```gdscript
+@onready var camera := $NativeCamera
+
+func _ready():
+	camera.camera_permission_granted.connect(_on_camera_permission_granted)
+	camera.frame_available.connect(_on_frame_available)
+	camera.request_camera_permission()
+
+func _on_camera_permission_granted() -> void:
+	var cameras := camera.get_all_cameras()
+	if cameras.is_empty():
+		return
+
+	var cam: CameraInfo = cameras[0]
+	var request := FeedRequest.new()
+		.set_camera_id(cam.get_camera_id())
+		.set_width(1280)
+		.set_height(720)
+		.set_auto_upright(true)        # rotate frames automatically — no manual rotation needed
+
+	camera.start(request)
+
+func _on_frame_available(frame: FrameInfo) -> void:
+	var img := frame.get_image()
+	# img is always upright regardless of how the device is held
+	# frame.get_rotation() reports the rotation that was applied
+```
+
+You can also set `auto_upright` through the Inspector by enabling the **Auto Upright** export property on the `NativeCamera` node and then calling `create_feed_request()`:
+
+```gdscript
+# In the Inspector, enable "Auto Upright" on the NativeCamera node, then:
+var request := camera.create_feed_request()
+camera.start(request)
+```
+
 <a name="signals"></a>
 
 ## <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="20"> Signals
@@ -166,7 +207,7 @@ Register listeners on the `NativeCamera` node:
 
 * `create_feed_request() -> FeedRequest`
 
-  * Creates a `FeedRequest` pre-populated with the node's exported property values (`frame_width`, `frame_height`, `frames_to_skip`, `frame_rotation`, `is_grayscale`, `mirror_horizontal`, `mirror_vertical`, `scale_width`, `scale_height`)
+  * Creates a `FeedRequest` pre-populated with the node's exported property values (`frame_width`, `frame_height`, `frames_to_skip`, `frame_rotation`, `is_grayscale`, `mirror_horizontal`, `mirror_vertical`, `scale_width`, `scale_height`, `auto_upright`)
 
 * `start(request: FeedRequest)`
 
@@ -201,15 +242,18 @@ Defines configuration parameters for starting a camera feed.
 * Camera ID
 * Output width and height
 * Frames to skip (performance tuning)
-* Rotation (degrees: 0, 90, 180, 270 — applied first)
+* Rotation (degrees: 0, 90, 180, 270 — applied first; ignored when `auto_upright` is enabled)
 * Grayscale capture
 * Horizontal mirror (`mirror_horizontal`) — flips the frame left-to-right after rotation
 * Vertical mirror (`mirror_vertical`) — flips the frame top-to-bottom after rotation
 * Scale width and height (`scale_width`, `scale_height`) — resizes the pixel buffer to the given dimensions as the final post-processing step (after rotation and mirroring); both must be non-zero for scaling to take effect; defaults to 0 (disabled)
+* **Auto-upright** (`auto_upright`) — when enabled, the plugin detects the current device orientation on every frame and automatically computes and applies the rotation needed to keep the image upright; the manual `rotation` value is ignored while this flag is active; defaults to `false`
 
 Both mirror flags default to `false` and can be combined independently with any rotation value. Mirroring is applied as a post-processing step after rotation on both Android and iOS, so the axis labels always refer to the final upright image.
 
 Scaling is applied after mirroring and uses nearest-neighbour interpolation, making it suitable for real-time use cases such as downscaling before CV inference. Setting either `scale_width` or `scale_height` to 0 disables scaling entirely.
+
+When `auto_upright` is active, `FrameInfo.get_rotation()` reports the rotation that was actually applied to that frame, which changes dynamically as the device is tilted. This value can be used for diagnostics or to inform downstream processing.
 
 Supports fluent chaining via setter methods.
 
@@ -225,6 +269,7 @@ Supports fluent chaining via setter methods.
 * `set_mirror_vertical(value: bool) -> FeedRequest`
 * `set_scale_width(value: int) -> FeedRequest`
 * `set_scale_height(value: int) -> FeedRequest`
+* `set_auto_upright(value: bool) -> FeedRequest`
 
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="16"> FrameInfo
 
@@ -260,6 +305,17 @@ Represents a supported camera output resolution.
 * Camera permission is required at runtime
 * The **"Two-Strike" Rule**: Starting in Android 11, if a user taps "Deny" for a specific permission more than once during the app's lifetime on the device, the system will no longer show the dialog for future requests. Once this two-strike threshold is reached, any subsequent calls to request the permission will immediately be denied without showing any dialogs.
 
+**Auto-upright on Android:**
+
+When `auto_upright` is enabled the plugin reads the camera's `SENSOR_ORIENTATION` value (0, 90, 180, or 270°) from `CameraCharacteristics` once when the camera opens, and reads the live device rotation from `Display.getRotation()` on every processed frame. The required rotation is computed using the standard Camera2 formula:
+
+| Camera type | Formula |
+| :---------- | :------ |
+| Back-facing | `(sensorOrientation − deviceDegrees + 360) % 360` |
+| Front-facing | `(sensorOrientation + deviceDegrees + 360) % 360` |
+
+Front cameras use addition rather than subtraction because their sensor image is horizontally mirrored, so the sensor and device rotations reinforce each other.
+
 **Troubleshooting:**
 
 * Logs (Linux/macOS): `adb logcat | grep godot`
@@ -272,9 +328,23 @@ Helpful resources:
 
 ### iOS
 
-* Follow Godot’s iOS export instructions
+* Follow Godot's iOS export instructions
 * Camera permission must be declared in the generated Xcode project
 * Use Xcode console logs for debugging
+
+**Auto-upright on iOS:**
+
+When `auto_upright` is enabled the plugin subscribes to `UIDevice.orientationDidChangeNotification` (started and stopped alongside the camera session) and caches the most recently observed `UIDeviceOrientation`. On every processed frame it maps that orientation to the rotation degrees needed to make the raw sensor buffer upright:
+
+| `UIDeviceOrientation` | Back camera | Front camera |
+| :-------------------- | :---------- | :----------- |
+| `.portrait` | 90° | 90° |
+| `.portraitUpsideDown` | 270° | 270° |
+| `.landscapeLeft` *(top points left)* | 0° | 180° |
+| `.landscapeRight` *(top points right)* | 180° | 0° |
+| `.faceUp` / `.faceDown` / `.unknown` | 90° *(portrait fallback)* | 90° *(portrait fallback)* |
+
+Front and back cameras produce mirrored values in the landscape cases because the front sensor image is horizontally flipped relative to the back sensor. Portrait orientations are the same for both camera types because the mirror axis does not interact with a 90°/270° rotation.
 
 <br>
 

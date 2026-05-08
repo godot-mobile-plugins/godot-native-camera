@@ -23,6 +23,7 @@ const PLUGIN_SINGLETON_NAME: String = "@pluginName@"
 @export var frames_to_skip: int = FeedRequest.DEFAULT_FRAMES_TO_SKIP
 
 ## The rotation to be applied to the frame in degrees. Valid values are 0, 90, 180, and 270.
+## Ignored when [member auto_upright] is enabled.
 @export var frame_rotation: int = FeedRequest.DEFAULT_ROTATION
 
 ## Whether the emitted frames should be grayscale or colored.
@@ -43,6 +44,11 @@ const PLUGIN_SINGLETON_NAME: String = "@pluginName@"
 ## Set to 0 (default) to disable scaling. Both scale_width and scale_height must be
 ## non-zero for scaling to take effect.
 @export var scale_height: int = FeedRequest.DEFAULT_SCALE_HEIGHT
+
+## When enabled, each frame is automatically rotated to be upright by combining
+## the camera sensor orientation with the current device orientation.
+## When active, [member frame_rotation] is ignored.
+@export var auto_upright: bool = FeedRequest.DEFAULT_AUTO_UPRIGHT
 
 var _plugin_singleton: Object
 
@@ -116,6 +122,7 @@ func create_feed_request() -> FeedRequest:
 		. set_mirror_vertical(mirror_vertical)
 		. set_scale_width(scale_width)
 		. set_scale_height(scale_height)
+		. set_auto_upright(auto_upright)
 	)
 
 

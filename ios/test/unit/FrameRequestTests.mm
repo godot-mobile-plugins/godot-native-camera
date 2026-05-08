@@ -31,6 +31,7 @@ static Dictionary make_full_request_dict() {
 	d[String("is_grayscale")]  = true;
 	d[String("scale_width")]   = (int64_t)0;
 	d[String("scale_height")]  = (int64_t)0;
+	d[String("auto_upright")]  = false;
 	return d;
 }
 
@@ -55,6 +56,20 @@ static Dictionary make_scaled_dict(int64_t sw, int64_t sh) {
 	Dictionary d = make_full_request_dict();
 	d[String("scale_width")]  = sw;
 	d[String("scale_height")] = sh;
+	return d;
+}
+
+/// Full dict with auto_upright = true; every other field is at its normal value.
+static Dictionary make_auto_upright_dict() {
+	Dictionary d = make_full_request_dict();
+	d[String("auto_upright")] = true;
+	return d;
+}
+
+/// Full dict with auto_upright = true and a front-facing camera id.
+static Dictionary make_front_camera_auto_upright_dict() {
+	Dictionary d = make_auto_upright_dict();
+	d[String("camera_id")] = String("front-camera-id");
 	return d;
 }
 
@@ -390,6 +405,70 @@ static Dictionary make_scaled_dict(int64_t sw, int64_t sh) {
 	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
 	XCTAssertEqual(req.scaleWidth,  0);
 	XCTAssertEqual(req.scaleHeight, 360);
+}
+
+// MARK: - isAutoUpright
+
+- (void)test_isAutoUpright_fullDict_returnsFalse {
+	// fullDict now includes auto_upright = false explicitly.
+	Dictionary d = make_full_request_dict();
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertFalse(req.isAutoUpright);
+}
+
+- (void)test_isAutoUpright_emptyDict_returnsFalse {
+	// Missing key must default to NO — the feature is strictly opt-in.
+	Dictionary d = make_empty_dict();
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertFalse(req.isAutoUpright);
+}
+
+- (void)test_isAutoUpright_partialDict_returnsFalse {
+	Dictionary d = make_partial_dict_camera_only();
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertFalse(req.isAutoUpright);
+}
+
+- (void)test_isAutoUpright_trueExplicit_returnsTrue {
+	Dictionary d = make_auto_upright_dict();
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertTrue(req.isAutoUpright);
+}
+
+- (void)test_isAutoUpright_falseExplicit_returnsFalse {
+	// Explicit false must not be treated the same as a missing key.
+	Dictionary d;
+	d[String("auto_upright")] = false;
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertFalse(req.isAutoUpright);
+}
+
+- (void)test_isAutoUpright_frontCameraAutoUprightDict_trueAndCorrectCameraId {
+	// auto_upright and camera_id are independent fields and must not interfere.
+	Dictionary d = make_front_camera_auto_upright_dict();
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertTrue(req.isAutoUpright);
+	XCTAssertEqualObjects(req.cameraId, @"front-camera-id");
+}
+
+- (void)test_isAutoUpright_doesNotAffectRotationGetter {
+	// FrameRequest is a pure data wrapper; enabling auto_upright must leave
+	// the stored rotation value untouched.  It is the plugin (NativeCamera),
+	// not FrameRequest, that decides which rotation to apply at runtime.
+	Dictionary d = make_auto_upright_dict(); // rotation = 270 from fullDict
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertTrue(req.isAutoUpright);
+	XCTAssertEqual(req.rotation, 270);
+}
+
+- (void)test_isAutoUpright_doesNotAffectOtherBooleanGetters {
+	// Enabling auto_upright must not silently flip other boolean flags.
+	Dictionary d = make_auto_upright_dict();
+	FrameRequest *req = [[FrameRequest alloc] initWithRawData:&d];
+	XCTAssertTrue(req.isAutoUpright);
+	XCTAssertTrue(req.isGrayscale);     // from fullDict
+	XCTAssertFalse(req.isMirrorHorizontal);
+	XCTAssertFalse(req.isMirrorVertical);
 }
 
 @end

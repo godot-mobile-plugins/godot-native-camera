@@ -21,6 +21,7 @@ public class FeedRequest {
 	private static final String DATA_MIRROR_VERTICAL_PROPERTY = "mirror_vertical";
 	private static final String DATA_SCALE_WIDTH_PROPERTY = "scale_width";
 	private static final String DATA_SCALE_HEIGHT_PROPERTY = "scale_height";
+	private static final String DATA_AUTO_UPRIGHT_PROPERTY = "auto_upright";
 
 	private Dictionary data;
 
@@ -89,6 +90,18 @@ public class FeedRequest {
 	 */
 	public int getScaleHeight() {
 		return data.containsKey(DATA_SCALE_HEIGHT_PROPERTY) ? toInt(data.get(DATA_SCALE_HEIGHT_PROPERTY)) : 0;
+	}
+
+
+	/**
+	 * When true the plugin will automatically compute the rotation needed to
+	 * produce an upright image, taking into account both the camera sensor
+	 * orientation and the current device orientation.  The manual {@code rotation}
+	 * field is ignored while this flag is active.
+	 */
+	public boolean isAutoUpright() {
+		return data.containsKey(DATA_AUTO_UPRIGHT_PROPERTY) ?
+				(boolean) data.get(DATA_AUTO_UPRIGHT_PROPERTY) : false;
 	}
 
 

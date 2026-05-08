@@ -19,7 +19,7 @@ public final class FrameBufferFixtures {
 	private FrameBufferFixtures() {
 	}
 
-	// ── tiny 2 × 2 RGBA frames ────────────────────────────────────────────
+	// -- tiny 2 × 2 RGBA frames --------------------------------------------
 
 	/**
 	* 2 × 2 solid-red RGBA frame.
@@ -62,7 +62,7 @@ public final class FrameBufferFixtures {
 		return b;
 	}
 
-	// ── tiny 2 × 2 grayscale frames ──────────────────────────────────────
+	// -- tiny 2 × 2 grayscale frames --------------------------------------
 
 	/**
 	* 2 × 2 grayscale frame, all pixels = 128 (mid-grey).
@@ -96,7 +96,7 @@ public final class FrameBufferFixtures {
 		return b;
 	}
 
-	// ── YUV plane simulation helpers ──────────────────────────────────────
+	// -- YUV plane simulation helpers --------------------------------------
 
 	/**
 	* Returns a flat Y-plane for a {@code width × height} image where every
