@@ -10,6 +10,8 @@
 		0721C6A22F82629000A9BA75 /* libnative_camera_plugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90CAAA9424E71FF10013969F /* libnative_camera_plugin.a */; };
 		0721C6C12F82639B00A9BA75 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0721C6C02F82639B00A9BA75 /* XCTest.framework */; platformFilter = ios; };
 		072C41E12F8F2AA300BA4867 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 072C41E02F8F2AA200BA4867 /* AVFoundation.framework */; };
+		078F64A12FAF0C8A005B6CE8 /* CameraInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078F649F2FAF0C8A005B6CE8 /* CameraInfoTests.swift */; };
+		078F64A22FAF0C8A005B6CE8 /* NativeCameraAutoUprightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078F64A02FAF0C8A005B6CE8 /* NativeCameraAutoUprightTests.swift */; };
 		07A6C6802F8F73FE00F484DA /* NativeCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A6C67C2F8F73FE00F484DA /* NativeCameraTests.swift */; };
 		07A6C6812F8F73FE00F484DA /* TestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A6C6782F8F73FE00F484DA /* TestFixtures.swift */; };
 		07A6C6822F8F73FE00F484DA /* WrapperTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07A6C67D2F8F73FE00F484DA /* WrapperTests.mm */; };
@@ -53,6 +55,8 @@
 		0721C69E2F82629000A9BA75 /* native_camera_plugin_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = native_camera_plugin_tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0721C6C02F82639B00A9BA75 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		072C41E02F8F2AA200BA4867 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		078F649F2FAF0C8A005B6CE8 /* CameraInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraInfoTests.swift; sourceTree = "<group>"; };
+		078F64A02FAF0C8A005B6CE8 /* NativeCameraAutoUprightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraAutoUprightTests.swift; sourceTree = "<group>"; };
 		07A6C6782F8F73FE00F484DA /* TestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFixtures.swift; sourceTree = "<group>"; };
 		07A6C67A2F8F73FE00F484DA /* FrameRequestTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FrameRequestTests.mm; sourceTree = "<group>"; };
 		07A6C67B2F8F73FE00F484DA /* native_camera_test_helpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = native_camera_test_helpers.h; sourceTree = "<group>"; };
@@ -112,6 +116,8 @@
 		07A6C67E2F8F73FE00F484DA /* unit */ = {
 			isa = PBXGroup;
 			children = (
+				078F649F2FAF0C8A005B6CE8 /* CameraInfoTests.swift */,
+				078F64A02FAF0C8A005B6CE8 /* NativeCameraAutoUprightTests.swift */,
 				07A6C67A2F8F73FE00F484DA /* FrameRequestTests.mm */,
 				07A6C67B2F8F73FE00F484DA /* native_camera_test_helpers.h */,
 				07A6C67C2F8F73FE00F484DA /* NativeCameraTests.swift */,
@@ -286,6 +292,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				07A6C6802F8F73FE00F484DA /* NativeCameraTests.swift in Sources */,
+				078F64A12FAF0C8A005B6CE8 /* CameraInfoTests.swift in Sources */,
+				078F64A22FAF0C8A005B6CE8 /* NativeCameraAutoUprightTests.swift in Sources */,
 				07A6C6812F8F73FE00F484DA /* TestFixtures.swift in Sources */,
 				07A6C6822F8F73FE00F484DA /* WrapperTests.mm in Sources */,
 				07A6C6832F8F73FE00F484DA /* FrameRequestTests.mm in Sources */,
@@ -354,10 +362,6 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"$(GODOT_DIR)/bin/libgodot.ios.template_debug.$(CURRENT_ARCH).simulator.a",
-				);
 				OTHER_CFLAGS = (
 					"-g",
 					"-DDEBUG",
@@ -406,6 +410,10 @@
 					"-isystem",
 					"$(GODOT_DIR)/platform/ios",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GODOT_DIR)/bin/libgodot.ios.template_debug.$(CURRENT_ARCH).simulator.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.godotengine.plugin.native-camera-unit-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -452,10 +460,6 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"$(GODOT_DIR)/bin/libgodot.ios.template_debug.$(CURRENT_ARCH).simulator.a",
-				);
 				OTHER_CFLAGS = (
 					"-fmodules",
 					"-fobjc-arc",
@@ -494,6 +498,10 @@
 					"$(GODOT_DIR)/drivers/apple_embedded",
 					"-isystem",
 					"$(GODOT_DIR)/platform/ios",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GODOT_DIR)/bin/libgodot.ios.template_debug.$(CURRENT_ARCH).simulator.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.godotengine.plugin.native-camera-unit-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";

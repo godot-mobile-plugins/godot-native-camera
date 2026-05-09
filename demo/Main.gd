@@ -53,11 +53,16 @@ func _on_get_button_pressed() -> void:
 	var __cameras_array = camera_node.get_all_cameras()
 	for __camera_info in __cameras_array:
 		_cameras[__camera_info.get_camera_id()] = __camera_info
-		_print_to_screen("Camera %s: front-facing?=%s, sensorOrientation=%d" % [
-			__camera_info.get_camera_id(),
-			str(__camera_info.is_front_facing()),
-			__camera_info.get_sensor_orientation()
-		])
+		_print_to_screen(
+			(
+				"Camera %s: front-facing?=%s, sensorOrientation=%d"
+				% [
+					__camera_info.get_camera_id(),
+					str(__camera_info.is_front_facing()),
+					__camera_info.get_sensor_orientation()
+				]
+			)
+		)
 		_print_to_screen("Available output sizes:")
 		for __size: FrameSize in __camera_info.get_output_sizes():
 			_print_to_screen("[%d,%d]" % [__size.get_width(), __size.get_height()])

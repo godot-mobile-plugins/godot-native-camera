@@ -228,13 +228,13 @@ final class NativeCameraMirrorTests: XCTestCase {
 
 	func test_mirror_neitherAxis_returnsOriginalData() {
 		let result = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-									   horizontal: false, vertical: false)
+									horizontal: false, vertical: false)
 		XCTAssertEqual([UInt8](result.data), [UInt8](PixelBufferFixture.gray2x2))
 	}
 
 	func test_mirror_neitherAxis_preservesDimensions() {
 		let result = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-									   horizontal: false, vertical: false)
+									horizontal: false, vertical: false)
 		XCTAssertEqual(result.w, 2)
 		XCTAssertEqual(result.h, 2)
 	}
@@ -245,22 +245,22 @@ final class NativeCameraMirrorTests: XCTestCase {
 		// [ 10 | 20 ]    →    [ 20 | 10 ]
 		// [ 30 | 40 ]    →    [ 40 | 30 ]
 		let result = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-									   horizontal: true, vertical: false)
+									horizontal: true, vertical: false)
 		XCTAssertEqual([UInt8](result.data), [20, 10, 40, 30])
 	}
 
 	func test_mirror_gray_horizontal_preservesDimensions() {
 		let result = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-									   horizontal: true, vertical: false)
+									horizontal: true, vertical: false)
 		XCTAssertEqual(result.w, 2)
 		XCTAssertEqual(result.h, 2)
 	}
 
 	func test_mirror_gray_horizontal_appliedTwice_recoversOriginal() {
 		let once  = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-									  horizontal: true, vertical: false)
+									horizontal: true, vertical: false)
 		let twice = camera.mirrorData(once.data, w: 2, h: 2, gray: true,
-									  horizontal: true, vertical: false)
+									horizontal: true, vertical: false)
 		XCTAssertEqual([UInt8](twice.data), [UInt8](PixelBufferFixture.gray2x2))
 	}
 
@@ -270,15 +270,15 @@ final class NativeCameraMirrorTests: XCTestCase {
 		// [ 10 | 20 ]    →    [ 30 | 40 ]
 		// [ 30 | 40 ]    →    [ 10 | 20 ]
 		let result = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-									   horizontal: false, vertical: true)
+									horizontal: false, vertical: true)
 		XCTAssertEqual([UInt8](result.data), [30, 40, 10, 20])
 	}
 
 	func test_mirror_gray_vertical_appliedTwice_recoversOriginal() {
 		let once  = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-									  horizontal: false, vertical: true)
+									horizontal: false, vertical: true)
 		let twice = camera.mirrorData(once.data, w: 2, h: 2, gray: true,
-									  horizontal: false, vertical: true)
+									horizontal: false, vertical: true)
 		XCTAssertEqual([UInt8](twice.data), [UInt8](PixelBufferFixture.gray2x2))
 	}
 
@@ -287,7 +287,7 @@ final class NativeCameraMirrorTests: XCTestCase {
 	func test_mirror_gray_bothAxes_equals180Rotation() {
 		// Mirroring both H and V is equivalent to a 180° rotation.
 		let mirrored = camera.mirrorData(PixelBufferFixture.gray2x2, w: 2, h: 2, gray: true,
-										 horizontal: true, vertical: true)
+										horizontal: true, vertical: true)
 		let rotated  = camera.rotateData(PixelBufferFixture.gray2x2, w: 2, h: 2, degrees: 180, gray: true)
 		XCTAssertEqual([UInt8](mirrored.data), [UInt8](rotated.data))
 	}
@@ -296,7 +296,7 @@ final class NativeCameraMirrorTests: XCTestCase {
 
 	func test_mirror_rgba_horizontal_preservesAlpha() {
 		let result = camera.mirrorData(PixelBufferFixture.rgba2x2, w: 2, h: 2, gray: false,
-									   horizontal: true, vertical: false)
+									horizontal: true, vertical: false)
 		let bytes  = [UInt8](result.data)
 		for i in stride(from: 3, to: bytes.count, by: 4) {
 			XCTAssertEqual(bytes[i], 255, "Alpha corrupted at pixel \(i/4)")
@@ -528,7 +528,7 @@ final class NativeCameraLifecycleTests: XCTestCase {
 		let valid   = Set([0, 90, 180, 270])
 		for cam in cameras {
 			XCTAssertTrue(valid.contains(cam.sensorOrientation),
-						  "sensorOrientation \(cam.sensorOrientation) is not a canonical angle (0/90/180/270)")
+						"sensorOrientation \(cam.sensorOrientation) is not a canonical angle (0/90/180/270)")
 		}
 	}
 
@@ -540,436 +540,5 @@ final class NativeCameraLifecycleTests: XCTestCase {
 	func test_onPermissionResult_callbackIsOptional_atInit() {
 		let camera = NativeCamera()
 		XCTAssertNil(camera.onPermissionResult)
-	}
-}
-
-// MARK: - NativeCamera Auto-Upright Tests
-
-/// Tests for `computeUprightRotation()` and the supporting state fields.
-///
-/// ## Strategy
-///
-/// `computeUprightRotation()` is `internal` and therefore accessible via
-/// `@testable import`.  Its two inputs — `isFrontFacingCamera` and
-/// `deviceOrientation` — are `internal` (promoted from `private` specifically
-/// to enable this test class) so they can be injected directly.  This lets
-/// every orientation × camera-type combination be exercised without requiring
-/// real hardware or a live capture session.
-///
-/// ## Rotation table under test
-///
-/// | `UIDeviceOrientation` | Back camera | Front camera |
-/// |-----------------------|-------------|--------------|
-/// | `.portrait`           | 90°         | 90°          |
-/// | `.portraitUpsideDown` | 270°        | 270°         |
-/// | `.landscapeLeft`      | 0°          | 180°         |
-/// | `.landscapeRight`     | 180°        | 0°           |
-/// | `.faceUp`             | 90° (fallback) | 90° (fallback) |
-/// | `.faceDown`           | 90° (fallback) | 90° (fallback) |
-/// | `.unknown`            | 90° (fallback) | 90° (fallback) |
-final class NativeCameraAutoUprightTests: XCTestCase {
-
-	private var camera: NativeCamera!
-
-	override func setUp() {
-		super.setUp()
-		camera = NativeCamera()
-	}
-
-	override func tearDown() {
-		camera = nil
-		super.tearDown()
-	}
-
-	// MARK: - State defaults
-
-	func test_isFrontFacingCamera_defaultsFalse() {
-		XCTAssertFalse(camera.isFrontFacingCamera,
-					   "isFrontFacingCamera must default to false (back camera assumption)")
-	}
-
-	func test_deviceOrientation_defaultsPortrait() {
-		XCTAssertEqual(camera.deviceOrientation, .portrait,
-					   "deviceOrientation must default to .portrait so the first frame is always valid")
-	}
-
-	// MARK: - Back camera — all four primary orientations
-
-	/// Back, portrait: sensor is landscape; device is upright → rotate 90° CW.
-	func test_computeUprightRotation_backCamera_portrait_returns90() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .portrait
-		XCTAssertEqual(camera.computeUprightRotation(), 90)
-	}
-
-	/// Back, portrait upside-down: sensor landscape, device inverted → rotate 270° CW.
-	func test_computeUprightRotation_backCamera_portraitUpsideDown_returns270() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .portraitUpsideDown
-		XCTAssertEqual(camera.computeUprightRotation(), 270)
-	}
-
-	/// Back, landscapeLeft (top points left, home button right):
-	/// sensor already aligned with the display → 0° needed.
-	func test_computeUprightRotation_backCamera_landscapeLeft_returns0() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .landscapeLeft
-		XCTAssertEqual(camera.computeUprightRotation(), 0)
-	}
-
-	/// Back, landscapeRight (top points right, home button left):
-	/// sensor inverted relative to the display → rotate 180°.
-	func test_computeUprightRotation_backCamera_landscapeRight_returns180() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .landscapeRight
-		XCTAssertEqual(camera.computeUprightRotation(), 180)
-	}
-
-	// MARK: - Front camera — all four primary orientations
-
-	/// Front, portrait: front sensor is horizontally mirrored but still needs
-	/// 90° CW to be upright — same as back camera for portrait.
-	func test_computeUprightRotation_frontCamera_portrait_returns90() {
-		camera.isFrontFacingCamera = true
-		camera.deviceOrientation   = .portrait
-		XCTAssertEqual(camera.computeUprightRotation(), 90)
-	}
-
-	/// Front, portrait upside-down: 270° — same as back camera for this axis.
-	func test_computeUprightRotation_frontCamera_portraitUpsideDown_returns270() {
-		camera.isFrontFacingCamera = true
-		camera.deviceOrientation   = .portraitUpsideDown
-		XCTAssertEqual(camera.computeUprightRotation(), 270)
-	}
-
-	/// Front, landscapeLeft: because the front sensor is horizontally mirrored,
-	/// the landscape cases are swapped compared to the back camera → 180°.
-	func test_computeUprightRotation_frontCamera_landscapeLeft_returns180() {
-		camera.isFrontFacingCamera = true
-		camera.deviceOrientation   = .landscapeLeft
-		XCTAssertEqual(camera.computeUprightRotation(), 180)
-	}
-
-	/// Front, landscapeRight: mirrored from back → 0°.
-	func test_computeUprightRotation_frontCamera_landscapeRight_returns0() {
-		camera.isFrontFacingCamera = true
-		camera.deviceOrientation   = .landscapeRight
-		XCTAssertEqual(camera.computeUprightRotation(), 0)
-	}
-
-	// MARK: - Fallback orientations → portrait default (90°)
-
-	func test_computeUprightRotation_backCamera_faceUp_returns90() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .faceUp
-		XCTAssertEqual(camera.computeUprightRotation(), 90,
-					   ".faceUp must fall through to the portrait default of 90°")
-	}
-
-	func test_computeUprightRotation_backCamera_faceDown_returns90() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .faceDown
-		XCTAssertEqual(camera.computeUprightRotation(), 90,
-					   ".faceDown must fall through to the portrait default of 90°")
-	}
-
-	func test_computeUprightRotation_backCamera_unknown_returns90() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .unknown
-		XCTAssertEqual(camera.computeUprightRotation(), 90,
-					   ".unknown must fall through to the portrait default of 90°")
-	}
-
-	func test_computeUprightRotation_frontCamera_faceUp_returns90() {
-		camera.isFrontFacingCamera = true
-		camera.deviceOrientation   = .faceUp
-		XCTAssertEqual(camera.computeUprightRotation(), 90)
-	}
-
-	func test_computeUprightRotation_frontCamera_faceDown_returns90() {
-		camera.isFrontFacingCamera = true
-		camera.deviceOrientation   = .faceDown
-		XCTAssertEqual(camera.computeUprightRotation(), 90)
-	}
-
-	func test_computeUprightRotation_frontCamera_unknown_returns90() {
-		camera.isFrontFacingCamera = true
-		camera.deviceOrientation   = .unknown
-		XCTAssertEqual(camera.computeUprightRotation(), 90)
-	}
-
-	// MARK: - Portrait orientations are the same for both camera types
-
-	/// Portrait cases do not involve the horizontal-mirror difference between
-	/// front and back sensors, so both cameras must return the same value.
-	func test_computeUprightRotation_portrait_sameForBothCameraTypes() {
-		camera.deviceOrientation = .portrait
-		camera.isFrontFacingCamera = false
-		let back = camera.computeUprightRotation()
-		camera.isFrontFacingCamera = true
-		let front = camera.computeUprightRotation()
-		XCTAssertEqual(back, front, "Both cameras must agree on portrait rotation")
-	}
-
-	func test_computeUprightRotation_portraitUpsideDown_sameForBothCameraTypes() {
-		camera.deviceOrientation = .portraitUpsideDown
-		camera.isFrontFacingCamera = false
-		let back = camera.computeUprightRotation()
-		camera.isFrontFacingCamera = true
-		let front = camera.computeUprightRotation()
-		XCTAssertEqual(back, front, "Both cameras must agree on portrait-upside-down rotation")
-	}
-
-	// MARK: - Landscape orientations differ between front and back cameras
-
-	func test_computeUprightRotation_landscapeLeft_frontAndBackDiffer() {
-		camera.deviceOrientation = .landscapeLeft
-		camera.isFrontFacingCamera = false
-		let back = camera.computeUprightRotation()   // 0
-		camera.isFrontFacingCamera = true
-		let front = camera.computeUprightRotation()  // 180
-		XCTAssertNotEqual(back, front,
-						  "landscapeLeft rotation must differ between front and back cameras")
-	}
-
-	func test_computeUprightRotation_landscapeRight_frontAndBackDiffer() {
-		camera.deviceOrientation = .landscapeRight
-		camera.isFrontFacingCamera = false
-		let back = camera.computeUprightRotation()   // 180
-		camera.isFrontFacingCamera = true
-		let front = camera.computeUprightRotation()  // 0
-		XCTAssertNotEqual(back, front,
-						  "landscapeRight rotation must differ between front and back cameras")
-	}
-
-	/// landscapeLeft back == landscapeRight front, and vice-versa,
-	/// confirming the front/back landscape values are exactly swapped.
-	func test_computeUprightRotation_landscapeValues_areExactlySwapped() {
-		camera.deviceOrientation   = .landscapeLeft
-		camera.isFrontFacingCamera = false
-		let backLeft = camera.computeUprightRotation()
-
-		camera.deviceOrientation   = .landscapeRight
-		camera.isFrontFacingCamera = true
-		let frontRight = camera.computeUprightRotation()
-
-		XCTAssertEqual(backLeft, frontRight,
-					   "Back landscapeLeft and front landscapeRight must be equal (both 0°)")
-
-		camera.deviceOrientation   = .landscapeRight
-		camera.isFrontFacingCamera = false
-		let backRight = camera.computeUprightRotation()
-
-		camera.deviceOrientation   = .landscapeLeft
-		camera.isFrontFacingCamera = true
-		let frontLeft = camera.computeUprightRotation()
-
-		XCTAssertEqual(backRight, frontLeft,
-					   "Back landscapeRight and front landscapeLeft must be equal (both 180°)")
-	}
-
-	// MARK: - Result is always a canonical rotation angle
-
-	/// For every orientation × camera-type combination the result must be
-	/// one of the four canonical values {0, 90, 180, 270}.
-	func test_computeUprightRotation_allCombinations_resultIsCanonical() {
-		let orientations: [UIDeviceOrientation] = [
-			.portrait, .portraitUpsideDown,
-			.landscapeLeft, .landscapeRight,
-			.faceUp, .faceDown, .unknown
-		]
-		let validAngles: Set<Int> = [0, 90, 180, 270]
-
-		for isFront in [false, true] {
-			camera.isFrontFacingCamera = isFront
-			for orientation in orientations {
-				camera.deviceOrientation = orientation
-				let result = camera.computeUprightRotation()
-				XCTAssertTrue(validAngles.contains(result),
-							  "Non-canonical rotation \(result)° for orientation \(orientation.rawValue), "
-							  + "isFront=\(isFront)")
-			}
-		}
-	}
-
-	// MARK: - Idempotency and liveness
-
-	/// Calling the method twice with the same state must return the same value,
-	/// confirming that computeUprightRotation() is read-only and side-effect-free.
-	func test_computeUprightRotation_consecutiveCalls_returnSameValue() {
-		camera.isFrontFacingCamera = false
-		camera.deviceOrientation   = .portrait
-		let first  = camera.computeUprightRotation()
-		let second = camera.computeUprightRotation()
-		XCTAssertEqual(first, second,
-					   "Consecutive calls with identical state must return the same value")
-	}
-
-	/// When deviceOrientation changes, the very next call must reflect the new value,
-	/// confirming the live orientation is read on every invocation.
-	func test_computeUprightRotation_updatesWhenOrientationChanges() {
-		camera.isFrontFacingCamera = false
-
-		camera.deviceOrientation = .portrait
-		let portrait = camera.computeUprightRotation()   // 90
-
-		camera.deviceOrientation = .landscapeLeft
-		let landscape = camera.computeUprightRotation()  // 0
-
-		XCTAssertNotEqual(portrait, landscape,
-						  "Result must update immediately when deviceOrientation changes")
-		XCTAssertEqual(portrait,  90)
-		XCTAssertEqual(landscape,  0)
-	}
-
-	/// Swapping camera type must immediately change the result for landscape
-	/// orientations, confirming isFrontFacingCamera is read on every invocation.
-	func test_computeUprightRotation_updatesWhenCameraTypeChanges() {
-		camera.deviceOrientation = .landscapeLeft
-
-		camera.isFrontFacingCamera = false
-		let back = camera.computeUprightRotation()   // 0
-
-		camera.isFrontFacingCamera = true
-		let front = camera.computeUprightRotation()  // 180
-
-		XCTAssertNotEqual(back, front,
-						  "Result must update immediately when isFrontFacingCamera changes")
-	}
-}
-
-// MARK: - CameraInfo Tests
-
-/// Tests for the `CameraInfo` model, focusing on the `sensorOrientation` property.
-///
-/// `CameraInfo.init` requires a real `AVCaptureDevice`; tests that need one are
-/// guarded by `XCTSkip` so they are silently skipped on a Simulator host with
-/// no physical cameras attached.
-final class CameraInfoTests: XCTestCase {
-
-	// MARK: - sensorOrientation stored at init
-
-	func test_sensorOrientation_90_isStoredAtInit() throws {
-		let dev = AVCaptureDevice.default(for: .video)
-		try XCTSkipIf(dev == nil, "No camera available on this host")
-		let info = CameraInfo(id: "cam0", device: dev!, outputSizes: [], sensorOrientation: 90)
-		XCTAssertEqual(info.sensorOrientation, 90)
-	}
-
-	func test_sensorOrientation_0_isStoredAtInit() throws {
-		let dev = AVCaptureDevice.default(for: .video)
-		try XCTSkipIf(dev == nil, "No camera available on this host")
-		let info = CameraInfo(id: "cam0", device: dev!, outputSizes: [], sensorOrientation: 0)
-		XCTAssertEqual(info.sensorOrientation, 0)
-	}
-
-	func test_sensorOrientation_180_isStoredAtInit() throws {
-		let dev = AVCaptureDevice.default(for: .video)
-		try XCTSkipIf(dev == nil, "No camera available on this host")
-		let info = CameraInfo(id: "cam0", device: dev!, outputSizes: [], sensorOrientation: 180)
-		XCTAssertEqual(info.sensorOrientation, 180)
-	}
-
-	func test_sensorOrientation_270_isStoredAtInit() throws {
-		let dev = AVCaptureDevice.default(for: .video)
-		try XCTSkipIf(dev == nil, "No camera available on this host")
-		let info = CameraInfo(id: "cam0", device: dev!, outputSizes: [], sensorOrientation: 270)
-		XCTAssertEqual(info.sensorOrientation, 270)
-	}
-
-	// MARK: - sensorOrientation does not interfere with other stored properties
-
-	func test_sensorOrientation_doesNotAffectId() throws {
-		let dev = AVCaptureDevice.default(for: .video)
-		try XCTSkipIf(dev == nil, "No camera available on this host")
-		let info = CameraInfo(id: "unique-id", device: dev!, outputSizes: [], sensorOrientation: 90)
-		XCTAssertEqual(info.id, "unique-id")
-	}
-
-	func test_sensorOrientation_doesNotAffectOutputSizesCount() throws {
-		let dev = AVCaptureDevice.default(for: .video)
-		try XCTSkipIf(dev == nil, "No camera available on this host")
-		let sizes = [FrameSize(width: 1280, height: 720), FrameSize(width: 640, height: 480)]
-		let info  = CameraInfo(id: "cam0", device: dev!, outputSizes: sizes, sensorOrientation: 90)
-		XCTAssertEqual(info.outputSizes.count, 2)
-	}
-}
-
-// MARK: - NativeCamera.deriveSensorOrientation Tests
-
-/// Tests for `NativeCamera.deriveSensorOrientation(from:)`.
-///
-/// The helper is `internal static`, making it accessible via `@testable import`.
-/// Because it requires a real `AVCaptureDevice`, every test that constructs one
-/// is guarded by `XCTSkip` for Simulator hosts with no cameras.
-///
-/// ## What is tested here
-///
-/// | Scenario | Expected result |
-/// |---|---|
-/// | Device has landscape-native formats (width ≥ height) | 90° |
-/// | Device has no formats | 90° (safe default) |
-/// | All cameras returned by getCameras() | value in {0, 90, 180, 270} |
-final class NativeCameraDeriveSensorOrientationTests: XCTestCase {
-
-	// MARK: - Default when no formats are available
-
-	/// The helper must never throw and must return a sensible default when the
-	/// device exposes no formats.  We cannot construct a formatless device in
-	/// a unit test without private API, so this scenario is verified by checking
-	/// that `deriveSensorOrientation` on any real device returns a canonical value.
-	func test_deriveSensorOrientation_realDevice_returnsCanonicalValue() throws {
-		let dev = AVCaptureDevice.default(for: .video)
-		try XCTSkipIf(dev == nil, "No camera available on this host")
-		let result = NativeCamera.deriveSensorOrientation(from: dev!)
-		XCTAssertTrue([0, 90, 180, 270].contains(result),
-					  "deriveSensorOrientation returned non-canonical value \(result)")
-	}
-
-	// MARK: - iPhone built-in back camera is landscape-native → 90°
-
-	func test_deriveSensorOrientation_backCamera_returns90() throws {
-		guard let dev = AVCaptureDevice.default(.builtInWideAngleCamera,
-				for: .video, position: .back) else {
-			throw XCTSkip("No back camera available on this host")
-		}
-		// All iPhone back cameras capture in landscape natively.
-		XCTAssertEqual(NativeCamera.deriveSensorOrientation(from: dev), 90,
-					   "iPhone back camera should report sensorOrientation 90")
-	}
-
-	func test_deriveSensorOrientation_frontCamera_returnsCanonicalValue() throws {
-		guard let dev = AVCaptureDevice.default(.builtInWideAngleCamera,
-				for: .video, position: .front) else {
-			throw XCTSkip("No front camera available on this host")
-		}
-		let result = NativeCamera.deriveSensorOrientation(from: dev)
-		XCTAssertTrue([0, 90, 180, 270].contains(result),
-					  "Front camera sensorOrientation \(result) is not canonical")
-	}
-
-	// MARK: - getCameras() integration: sensorOrientation propagates end-to-end
-
-	/// When `getCameras()` is called on a host that has at least one camera,
-	/// every returned `CameraInfo` must carry a `sensorOrientation` that is a
-	/// member of {0, 90, 180, 270}.
-	func test_getCameras_sensorOrientation_isCanonicalForAllCameras() {
-		let cameras = NativeCamera().getCameras()
-		let valid   = Set([0, 90, 180, 270])
-		for cam in cameras {
-			XCTAssertTrue(valid.contains(cam.sensorOrientation),
-						  "Camera '\(cam.id)' sensorOrientation \(cam.sensorOrientation) is not canonical")
-		}
-	}
-
-	/// Confirms that `getCameras()` propagates `sensorOrientation` into `CameraInfo`
-	/// by checking that the property is non-negative for every camera.
-	/// (A value of 0 is valid for landscape-native iPads; negative would be a bug.)
-	func test_getCameras_sensorOrientation_isNonNegative() {
-		let cameras = NativeCamera().getCameras()
-		for cam in cameras {
-			XCTAssertGreaterThanOrEqual(cam.sensorOrientation, 0,
-									   "Camera '\(cam.id)' has negative sensorOrientation")
-		}
 	}
 }
