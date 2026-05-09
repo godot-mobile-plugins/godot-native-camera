@@ -39,13 +39,17 @@ static FrameInfo *make_frame_info(int w, int h, int rotation, BOOL grayscale) {
 }
 
 /// Build a minimal CameraInfo with one output size – does NOT need a real AVCaptureDevice
-/// because CameraInfo stores the device reference but the wrapper only reads `id` and `outputSizes`.
+/// because CameraInfo stores the device reference but the wrapper only reads `id`,
+/// `outputSizes`, and `sensorOrientation` for non-position fields.
 /// We pass nil for device; accessing device.position will crash, so CameraInfoWrapper tests
 /// using isFrontFacing must provide a real device or be skipped on Simulator.
-static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<FrameSize *> *sizes) {
+static CameraInfo *make_camera_info_without_device(NSString *cameraId,
+                                                   NSArray<FrameSize *> *sizes,
+                                                   int sensorOrientation) {
     // Construct with nil device – only safe when the test doesn't call buildRawData
-    // (which reads device.position). Use make_camera_info_with_back_position for full tests.
-    return [[CameraInfo alloc] initWithId:cameraId device:nil outputSizes:sizes];
+    // (which reads device.position). Use a real device for full integration tests.
+    return [[CameraInfo alloc] initWithId:cameraId device:nil outputSizes:sizes
+                        sensorOrientation:sensorOrientation];
 }
 
 // ---------------------------------------------------------------------------
@@ -224,15 +228,15 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
 
 @implementation CameraInfoWrapperTests
 
-// MARK: Key presence (device = nil, is_front_facing derivation is skipped)
+// MARK: Key presence (requires a real AVCaptureDevice for device.position access)
 
 - (void)test_buildRawData_containsCameraIdKey {
     NSArray *sizes = @[make_frame_size(1280, 720)];
-    // Use a real device from AVCaptureDevice when available; otherwise skip isFrontFacing sub-test.
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
 
-    CameraInfo *info     = [[CameraInfo alloc] initWithId:@"test-id" device:dev outputSizes:sizes];
+    CameraInfo *info     = [[CameraInfo alloc] initWithId:@"test-id" device:dev
+                                              outputSizes:sizes sensorOrientation:90];
     CameraInfoWrapper *w = [[CameraInfoWrapper alloc] initWithCameraInfo:info];
     XCTAssertDictHasKey([w buildRawData], String("camera_id"));
 }
@@ -241,7 +245,8 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
     NSArray *sizes   = @[make_frame_size(640, 480)];
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev outputSizes:sizes];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
     XCTAssertDictHasKey([[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData,
                         String("is_front_facing"));
 }
@@ -250,9 +255,20 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
     NSArray *sizes   = @[make_frame_size(640, 480)];
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev outputSizes:sizes];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
     XCTAssertDictHasKey([[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData,
                         String("output_sizes"));
+}
+
+- (void)test_buildRawData_containsSensorOrientationKey {
+    AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (!dev) { XCTSkip(@"No camera available on this host"); }
+    NSArray *sizes   = @[make_frame_size(1280, 720)];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
+    XCTAssertDictHasKey([[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData,
+                        String("sensor_orientation"));
 }
 
 // MARK: camera_id value
@@ -261,9 +277,43 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
     NSArray *sizes   = @[make_frame_size(1280, 720)];
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"my-unique-camera-id" device:dev outputSizes:sizes];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"my-unique-camera-id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
     Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
     XCTAssertGodotStringEqual(dict_get_string(d, String("camera_id")), String("my-unique-camera-id"));
+}
+
+// MARK: sensor_orientation value
+
+- (void)test_buildRawData_sensorOrientation_90_isPreserved {
+    AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (!dev) { XCTSkip(@"No camera available on this host"); }
+    NSArray *sizes   = @[make_frame_size(1280, 720)];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
+    Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
+    XCTAssertEqual(dict_get_int(d, String("sensor_orientation")), 90);
+}
+
+- (void)test_buildRawData_sensorOrientation_0_isPreserved {
+    AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (!dev) { XCTSkip(@"No camera available on this host"); }
+    NSArray *sizes   = @[make_frame_size(1280, 720)];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:0];
+    Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
+    XCTAssertEqual(dict_get_int(d, String("sensor_orientation")), 0);
+}
+
+- (void)test_buildRawData_sensorOrientation_isIntType {
+    AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (!dev) { XCTSkip(@"No camera available on this host"); }
+    NSArray *sizes   = @[make_frame_size(1280, 720)];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
+    Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
+    Variant v        = d[String("sensor_orientation")];
+    XCTAssertEqual(v.get_type(), Variant::INT);
 }
 
 // MARK: output_sizes array
@@ -272,7 +322,8 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
     NSArray *sizes   = @[make_frame_size(640, 480), make_frame_size(1280, 720)];
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev outputSizes:sizes];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
     Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
     Variant sizesVar = d[String("output_sizes")];
     XCTAssertEqual(sizesVar.get_type(), Variant::ARRAY);
@@ -282,7 +333,8 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
     NSArray *sizes   = @[make_frame_size(640, 480), make_frame_size(1280, 720), make_frame_size(1920, 1080)];
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev outputSizes:sizes];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
     Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
     Array godotSizes = (Array)d[String("output_sizes")];
     XCTAssertEqual((int)godotSizes.size(), 3);
@@ -291,7 +343,8 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
 - (void)test_buildRawData_outputSizes_emptyArray_yieldsEmptyGodotArray {
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev outputSizes:@[]];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:@[] sensorOrientation:90];
     Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
     Array godotSizes = (Array)d[String("output_sizes")];
     XCTAssertEqual((int)godotSizes.size(), 0);
@@ -301,7 +354,8 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
     NSArray *sizes   = @[make_frame_size(320, 240)];
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev outputSizes:sizes];
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:sizes sensorOrientation:90];
     Dictionary d     = [[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData;
     Array godotSizes = (Array)d[String("output_sizes")];
     Dictionary first = (Dictionary)godotSizes[0];
@@ -311,11 +365,12 @@ static CameraInfo *make_camera_info_without_device(NSString *cameraId, NSArray<F
     XCTAssertEqual(dict_get_int(first, String("height")), 240);
 }
 
-- (void)test_buildRawData_exactlyThreeKeys {
+- (void)test_buildRawData_exactlyFourKeys {
     AVCaptureDevice *dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if (!dev) { XCTSkip(@"No camera available on this host"); }
-    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev outputSizes:@[]];
-    XCTAssertEqual([[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData.size(), 3);
+    CameraInfo *info = [[CameraInfo alloc] initWithId:@"id" device:dev
+                                          outputSizes:@[] sensorOrientation:90];
+    XCTAssertEqual([[CameraInfoWrapper alloc] initWithCameraInfo:info].buildRawData.size(), 4);
 }
 
 @end

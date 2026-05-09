@@ -73,8 +73,32 @@ import UIKit
 				let dims = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
 				return FrameSize(width: Int(dims.width), height: Int(dims.height))
 			}
-			return CameraInfo(id: device.uniqueID, device: device, outputSizes: sizes)
+			let so = NativeCamera.deriveSensorOrientation(from: device)
+			return CameraInfo(id: device.uniqueID, device: device, outputSizes: sizes,
+					sensorOrientation: so)
 		}
+	}
+
+	/// Derives the sensor orientation in degrees (0, 90, 180, or 270) from the
+	/// first available capture format on the given device.
+	///
+	/// On iPhone, the built-in camera sensor is mounted in landscape orientation, so
+	/// the raw frame buffer always needs 90° of clockwise rotation to appear upright
+	/// in the device's natural (portrait) orientation.  On some iPad models the camera
+	/// may be mounted differently, resulting in 0°.  The value is a fixed hardware
+	/// property and does not change with device orientation.
+	///
+	/// - Parameter device: The `AVCaptureDevice` to inspect.
+	/// - Returns: `90` if the first format's native width is greater than or equal to
+	///   its height (landscape-mounted sensor — the common case for all iPhones), or
+	///   `0` for a portrait-mounted sensor.  Defaults to `90` when no formats are
+	///   available, matching the expected behaviour on all current iPhone hardware.
+	internal static func deriveSensorOrientation(from device: AVCaptureDevice) -> Int {
+		guard let format = device.formats.first else { return 90 }
+		let dims = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+		// A landscape-native sensor (width >= height) in a portrait-natural device
+		// needs 90° CW rotation to produce an upright image — the standard for all iPhones.
+		return dims.width >= dims.height ? 90 : 0
 	}
 
 	@objc public func start(request: FrameRequest) {

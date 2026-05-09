@@ -232,6 +232,8 @@ Encapsulates camera metadata provided by the mobile OS.
 * `get_camera_id() -> String`
 * `is_front_facing() -> bool`
 * `get_output_sizes() -> Array[FrameSize]`
+* `get_sensor_orientation() -> int`
+  * Returns the clockwise angle in degrees (`0`, `90`, `180`, or `270`) that the camera sensor image must be rotated to be upright when the device is held in its natural (portrait) orientation. This value is a fixed hardware property of the camera and does not change with device rotation. Defaults to `0` when the value is unavailable (e.g. on emulators). Useful when implementing custom frame processing that needs to account for sensor mounting angle independently of device orientation.
 
 ### <img src="https://raw.githubusercontent.com/godot-mobile-plugins/godot-native-camera/main/addon/src/main/icon.png" width="16"> FeedRequest
 

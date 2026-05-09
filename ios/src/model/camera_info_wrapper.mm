@@ -11,6 +11,7 @@
 static String const kCameraIdProperty = "camera_id";
 static String const kIsFrontFacingProperty = "is_front_facing";
 static String const kOutputSizesProperty = "output_sizes";
+static String const kSensorOrientationProperty = "sensor_orientation";
 
 - (instancetype)initWithCameraInfo:(CameraInfo *)cameraInfo {
 	self = [super init];
@@ -36,6 +37,12 @@ static String const kOutputSizesProperty = "output_sizes";
 	}
 
 	dict[kOutputSizesProperty] = dictArray;
+
+	// SENSOR_ORIENTATION is the clockwise angle (0, 90, 180, or 270 degrees) that
+	// the camera image must be rotated to be upright when the device is in its
+	// natural (portrait) orientation.  On iPhone this is always 90°; on some iPad
+	// models it may be 0°.  Mirrors the Android Camera2 SENSOR_ORIENTATION field.
+	dict[kSensorOrientationProperty] = (int)self.cameraInfo.sensorOrientation;
 
 	return dict;
 }

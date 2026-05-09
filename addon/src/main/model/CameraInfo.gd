@@ -7,6 +7,7 @@ class_name CameraInfo extends RefCounted
 const DATA_CAMERA_ID_PROPERTY := &"camera_id"
 const DATA_IS_FRONT_FACING_PROPERTY := &"is_front_facing"
 const DATA_OUTPUT_SIZES_PROPERTY := &"output_sizes"
+const DATA_SENSOR_ORIENTATION_PROPERTY := &"sensor_orientation"
 
 var _data: Dictionary
 
@@ -30,3 +31,11 @@ func get_output_sizes() -> Array[FrameSize]:
 		__sizes.append(FrameSize.new(__size_dict))
 
 	return __sizes
+
+
+## Returns the clockwise angle in degrees (0, 90, 180, or 270) that the camera
+## sensor image must be rotated to be upright when the device is held in its
+## natural (portrait) orientation.  Defaults to [code]0[/code] when the value
+## is unavailable.
+func get_sensor_orientation() -> int:
+	return _data[DATA_SENSOR_ORIENTATION_PROPERTY] if _data.has(DATA_SENSOR_ORIENTATION_PROPERTY) else 0

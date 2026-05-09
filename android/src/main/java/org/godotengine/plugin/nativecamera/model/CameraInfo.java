@@ -22,6 +22,7 @@ public class CameraInfo {
 	private static final String DATA_CAMERA_ID_PROPERTY = "camera_id";
 	private static final String DATA_IS_FRONT_FACING_PROPERTY = "is_front_facing";
 	private static final String DATA_OUTPUT_SIZES_PROPERTY = "output_sizes";
+	private static final String DATA_SENSOR_ORIENTATION_PROPERTY = "sensor_orientation";
 
 	private String cameraId;
 	private CameraCharacteristics characteristics;
@@ -55,6 +56,13 @@ public class CameraInfo {
 		}
 
 		dict.put(DATA_OUTPUT_SIZES_PROPERTY, dictList.toArray());
+
+		// SENSOR_ORIENTATION is the clockwise angle (0, 90, 180, or 270 degrees) that
+		// the camera image must be rotated to be upright when the device is held in its
+		// natural (portrait) orientation.  Null-safe: defaults to 0 when the value is
+		// unavailable (e.g. on emulators or in unit tests).
+		Integer sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+		dict.put(DATA_SENSOR_ORIENTATION_PROPERTY, sensorOrientation != null ? sensorOrientation : 0);
 
 		return dict;
 	}
