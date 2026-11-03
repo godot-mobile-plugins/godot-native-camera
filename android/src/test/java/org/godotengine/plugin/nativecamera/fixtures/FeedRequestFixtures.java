@@ -100,7 +100,7 @@ public final class FeedRequestFixtures {
 		return d;
 	}
 
-	// ── Scale variants ─────────────────────────────────────────────────────
+	// -- Scale variants -----------------------------------------------------
 
 	/**
 	 * Both scale dimensions set to 640×360 — half the default 1280×720 capture
@@ -146,7 +146,7 @@ public final class FeedRequestFixtures {
 		return d;
 	}
 
-	// ── auto_upright variants ──────────────────────────────────────────────
+	// -- auto_upright variants ----------------------------------------------
 
 	/**
 	 * auto_upright = true; the plugin will compute the needed rotation from
