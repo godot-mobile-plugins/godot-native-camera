@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class FeedRequestTest {
 
-	// ── cameraId ─────────────────────────────────────────────────────────
+	// -- cameraId ---------------------------------------------------------
 
 	@Test
 	public void getCameraId_returnsValueFromDict() {
@@ -44,7 +44,7 @@ public class FeedRequestTest {
 		assertEquals("1", req.getCameraId());
 	}
 
-	// ── width ─────────────────────────────────────────────────────────────
+	// -- width -------------------------------------------------------------
 
 	@Test
 	public void getWidth_returnsValueFromDict() {
@@ -58,7 +58,7 @@ public class FeedRequestTest {
 		assertEquals(-1, req.getWidth());
 	}
 
-	// ── height ────────────────────────────────────────────────────────────
+	// -- height ------------------------------------------------------------
 
 	@Test
 	public void getHeight_returnsValueFromDict() {
@@ -72,7 +72,7 @@ public class FeedRequestTest {
 		assertEquals(-1, req.getHeight());
 	}
 
-	// ── framesToSkip ──────────────────────────────────────────────────────
+	// -- framesToSkip ------------------------------------------------------
 
 	@Test
 	public void getFramesToSkip_returnsValueFromDict() {
@@ -93,7 +93,7 @@ public class FeedRequestTest {
 		assertEquals(1, req.getFramesToSkip());
 	}
 
-	// ── rotation ──────────────────────────────────────────────────────────
+	// -- rotation ----------------------------------------------------------
 
 	@Test
 	public void getRotation_returnsValueFromDict() {
@@ -119,7 +119,7 @@ public class FeedRequestTest {
 		assertEquals(0, req.getRotation());
 	}
 
-	// ── isGrayscale ───────────────────────────────────────────────────────
+	// -- isGrayscale -------------------------------------------------------
 
 	@Test
 	public void isGrayscale_falseInFullDict() {
@@ -139,7 +139,7 @@ public class FeedRequestTest {
 		assertFalse(req.isGrayscale());
 	}
 
-	// ── getRawData ────────────────────────────────────────────────────────
+	// -- getRawData --------------------------------------------------------
 
 	@Test
 	public void getRawData_returnsSameDictInstance() {
@@ -148,7 +148,7 @@ public class FeedRequestTest {
 		assertSame(dict, req.getRawData());
 	}
 
-	// ── mirrorHorizontal ──────────────────────────────────────────────────
+	// -- mirrorHorizontal --------------------------------------------------
 
 	@Test
 	public void isMirrorHorizontal_falseInFullDict() {
@@ -174,7 +174,7 @@ public class FeedRequestTest {
 		assertFalse(req.isMirrorHorizontal());
 	}
 
-	// ── mirrorVertical ────────────────────────────────────────────────────
+	// -- mirrorVertical ----------------------------------------------------
 
 	@Test
 	public void isMirrorVertical_falseInFullDict() {
@@ -200,7 +200,7 @@ public class FeedRequestTest {
 		assertFalse(req.isMirrorVertical());
 	}
 
-	// ── mirror combined ───────────────────────────────────────────────────
+	// -- mirror combined ---------------------------------------------------
 
 	@Test
 	public void mirrorBothDict_bothFlagsTrue() {
@@ -223,7 +223,7 @@ public class FeedRequestTest {
 		assertTrue(req.isMirrorVertical());
 	}
 
-	// ── scaleWidth ────────────────────────────────────────────────────────
+	// -- scaleWidth --------------------------------------------------------
 
 	@Test
 	public void getScaleWidth_returnsValueFromDict() {
@@ -256,7 +256,7 @@ public class FeedRequestTest {
 		assertEquals(640, req.getScaleWidth());
 	}
 
-	// ── scaleHeight ───────────────────────────────────────────────────────
+	// -- scaleHeight -------------------------------------------------------
 
 	@Test
 	public void getScaleHeight_returnsValueFromDict() {
@@ -288,7 +288,7 @@ public class FeedRequestTest {
 		assertEquals(360, req.getScaleHeight());
 	}
 
-	// ── scale combined ────────────────────────────────────────────────────
+	// -- scale combined ----------------------------------------------------
 
 	@Test
 	public void scaledDict_bothDimensionsPopulated() {
@@ -318,7 +318,7 @@ public class FeedRequestTest {
 		assertEquals(360, req.getScaleHeight());
 	}
 
-	// ── autoUpright ───────────────────────────────────────────────────────
+	// -- autoUpright -------------------------------------------------------
 
 	@Test
 	public void isAutoUpright_falseInFullDict() {
@@ -379,7 +379,7 @@ public class FeedRequestTest {
 		assertEquals(90, req.getRotation()); // fullDict rotation is 90
 	}
 
-	// ── type coercion (Long -> int) ───────────────────────────────────────
+	// -- type coercion (Long -> int) ---------------------------------------
 
 	@Test
 	public void intFields_neverThrowClassCastException_forLongValues() {
